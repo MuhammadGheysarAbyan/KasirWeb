@@ -1,0 +1,25 @@
+:root{
+  --sidebar-bg:#0f1724;
+  --accent:#00b3b3;
+  --accent-dark:#008f8f;
+  --card-bg:#ffffff;
+  --main-bg:#f8fafc;
+  --muted:#6b7280;
+}
+*{box-sizing:border-box}
+body{ margin:0; font-family:Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial; background:var(--main-bg); color:#0f1724;}
+.sidebar{ width:250px; background:var(--sidebar-bg); height:100vh; position:fixed; padding:26px 16px; display:flex; flex-direction:column; align-items:center; gap:8px;}
+.sidebar .logo{ width:120px; border-radius:8px }
+.sidebar a{ width:100%; color:#dff6f6; padding:12px; margin:6px 0; display:flex; align-items:center; gap:10px; border-radius:8px; text-decoration:none; transition:background .16s, color .16s }
+.sidebar a:hover{ background:rgba(0,179,179,0.12); color:var(--accent) }
+.main{ margin-left:270px; padding:28px; min-height:100vh; }
+.card-stat{ background:var(--card-bg); border-radius:12px; padding:18px; box-shadow:0 6px 18px rgba(15,23,36,0.06) }
+.card-stat h5{ margin:0 0 6px 0; color:var(--muted) }
+.card-stat .num{ font-size:26px; font-weight:700; color:#0f1724 }
+.table thead th{ background:var(--accent); color:#072022 }
+.table tbody tr td{ background:#fff }
+.quick-actions .btn{ margin-right:8px }
+@media(max-width:768px){
+  .sidebar{ position:relative; width:100%; height:auto; flex-direction:row; justify-content:space-around; padding:10px}
+  .main{ margin-left:0; padding:16px }
+}
