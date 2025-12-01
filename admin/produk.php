@@ -10,7 +10,30 @@ include("../config/db.php");
 if(isset($_POST['tambah_kategori'])){
     $nama_kategori = trim($_POST['nama_kategori']);
     if(!empty($nama_kategori)){
-        mysqli_query($conn, "INSERT INTO kategori (nama_kategori) VALUES ('$nama_kategori')");
+        // Generate kode kategori otomatis
+        $prefix = strtoupper(substr(preg_replace('/[^A-Za-z]/', '', $nama_kategori), 0, 3));
+        if(strlen($prefix) < 3) {
+            $prefix = str_pad($prefix, 3, 'X', STR_PAD_RIGHT);
+        }
+        
+        // Cari nomor urut terakhir untuk prefix ini
+        $last_code = mysqli_query($conn, "SELECT kode FROM kategori WHERE kode LIKE '$prefix%' ORDER BY id DESC LIMIT 1");
+        $next_number = 1;
+        
+        if(mysqli_num_rows($last_code) > 0) {
+            $last_row = mysqli_fetch_assoc($last_code);
+            $last_code_value = $last_row['kode'];
+            // Extract number from last code (e.g., LAP-001 -> 1)
+            preg_match('/-?(\d+)$/', $last_code_value, $matches);
+            if(!empty($matches)) {
+                $next_number = intval($matches[1]) + 1;
+            }
+        }
+        
+        $kode = $prefix . '-' . str_pad($next_number, 3, '0', STR_PAD_LEFT);
+        
+        // Insert kategori dengan kode
+        mysqli_query($conn, "INSERT INTO kategori (nama_kategori, kode) VALUES ('$nama_kategori', '$kode')");
         header("Location: produk.php?success=kategori_tambah");
         exit();
     }
@@ -39,45 +62,45 @@ if(isset($_POST['tambah'])){
     $harga = $_POST['harga'];
     $stok = $_POST['stok'];
     $kategori_id = $_POST['kategori_id'] ?? 1;
-    $kode = mysqli_real_escape_string($conn, $_POST['kode']);
-
-    // Generate kode otomatis jika kosong
-    if(empty($kode)){
-        $kategori_result = mysqli_query($conn, "SELECT nama_kategori FROM kategori WHERE id=$kategori_id");
-        $kategori_row = mysqli_fetch_assoc($kategori_result);
-        $nama_kategori = $kategori_row['nama_kategori'] ?? 'Umum';
-        
-        // Generate prefix dari nama kategori
-        $prefix = 'PROD';
-        if(stripos($nama_kategori, 'laptop') !== false) $prefix = 'LAP';
-        elseif(stripos($nama_kategori, 'keyboard') !== false) $prefix = 'KEY';
-        elseif(stripos($nama_kategori, 'mouse') !== false) $prefix = 'MOU';
-        elseif(stripos($nama_kategori, 'monitor') !== false) $prefix = 'MON';
-        elseif(stripos($nama_kategori, 'printer') !== false) $prefix = 'PRI';
-        elseif(stripos($nama_kategori, 'aksesoris') !== false) $prefix = 'ACC';
-        elseif(stripos($nama_kategori, 'komputer') !== false) $prefix = 'KOMP';
-        elseif(stripos($nama_kategori, 'elektronik') !== false) $prefix = 'ELEK';
-        
-        // Cari nomor urut terakhir untuk kategori ini
-        $last_code_query = mysqli_query($conn, "SELECT kode FROM produk WHERE kode LIKE '$prefix%' ORDER BY id DESC LIMIT 1");
-        $next_number = 1;
-        
-        if(mysqli_num_rows($last_code_query) > 0) {
-            $last_code = mysqli_fetch_assoc($last_code_query)['kode'];
-            // Extract number from last code (e.g., LAP001 -> 1)
-            preg_match('/\d+$/', $last_code, $matches);
-            if(!empty($matches)) {
-                $next_number = intval($matches[0]) + 1;
-            }
-        }
-        
-        $kode = $prefix . str_pad($next_number, 3, '0', STR_PAD_LEFT);
+    
+    // Ambil informasi kategori
+    $kategori_result = mysqli_query($conn, "SELECT nama_kategori FROM kategori WHERE id=$kategori_id");
+    $kategori_row = mysqli_fetch_assoc($kategori_result);
+    $nama_kategori = $kategori_row['nama_kategori'] ?? 'Umum';
+    
+    // Generate kode otomatis berdasarkan kategori
+    $prefix = strtoupper(substr(preg_replace('/[^A-Za-z]/', '', $nama_kategori), 0, 3));
+    if(strlen($prefix) < 3) {
+        $prefix = str_pad($prefix, 3, 'X', STR_PAD_RIGHT);
     }
-
+    
+    // Cari nomor urut terakhir untuk kategori ini
+    $last_code_query = mysqli_query($conn, "
+        SELECT kode FROM produk 
+        WHERE kategori_id = $kategori_id 
+        AND kode LIKE '$prefix%'
+        ORDER BY id DESC LIMIT 1
+    ");
+    
+    $next_number = 1;
+    
+    if(mysqli_num_rows($last_code_query) > 0) {
+        $last_code = mysqli_fetch_assoc($last_code_query)['kode'];
+        // Extract number from last code (e.g., LAP-001 -> 1)
+        preg_match('/-?(\d+)$/', $last_code, $matches);
+        if(!empty($matches)) {
+            $last_number = intval($matches[1]);
+            $next_number = $last_number + 1;
+        }
+    }
+    
+    // Format kode: PREFIX-NOMOR (3 digit)
+    $kode = $prefix . '-' . str_pad($next_number, 3, '0', STR_PAD_LEFT);
+    
     // Cek apakah kode sudah ada
     $cek_kode = mysqli_query($conn, "SELECT id FROM produk WHERE kode='$kode'");
     if(mysqli_num_rows($cek_kode) > 0){
-        $kode = $kode . '_' . rand(100, 999);
+        $kode = $prefix . '-' . str_pad($next_number, 3, '0', STR_PAD_LEFT) . rand(1, 9);
     }
 
     $foto = 'default-product.jpg';
@@ -102,9 +125,6 @@ if(isset($_POST['tambah'])){
     if(in_array('kategori_id', $columns) && in_array('kode', $columns) && in_array('foto', $columns)) {
         mysqli_query($conn, "INSERT INTO produk (nama_produk, harga, stok, foto, kode, kategori_id) VALUES ('$nama_produk','$harga','$stok','$foto','$kode','$kategori_id')");
     } elseif(in_array('kategori', $columns) && in_array('kode', $columns) && in_array('foto', $columns)) {
-        $kategori_result = mysqli_query($conn, "SELECT nama_kategori FROM kategori WHERE id=$kategori_id");
-        $kategori_row = mysqli_fetch_assoc($kategori_result);
-        $nama_kategori = $kategori_row['nama_kategori'] ?? 'Umum';
         mysqli_query($conn, "INSERT INTO produk (nama_produk, harga, stok, foto, kategori, kode) VALUES ('$nama_produk','$harga','$stok','$foto','$nama_kategori','$kode')");
     } else {
         mysqli_query($conn, "INSERT INTO produk (nama_produk, harga, stok) VALUES ('$nama_produk','$harga','$stok')");
@@ -176,14 +196,29 @@ $kategori_filter = $_GET['kategori'] ?? '';
 $stok_filter = $_GET['stok'] ?? '';
 
 // Query untuk mengambil data produk dengan pagination
-$query = "SELECT p.*, k.nama_kategori 
-          FROM produk p 
-          LEFT JOIN kategori k ON p.kategori_id = k.id 
-          WHERE 1=1";
-$count_query = "SELECT COUNT(*) as total 
-                FROM produk p 
-                LEFT JOIN kategori k ON p.kategori_id = k.id 
-                WHERE 1=1";
+// AMAN: Cek dulu apakah kolom kode ada di tabel kategori
+$table_check = mysqli_query($conn, "SHOW COLUMNS FROM kategori LIKE 'kode'");
+$has_kode_column = (mysqli_num_rows($table_check) > 0);
+
+if($has_kode_column) {
+    $query = "SELECT p.*, k.nama_kategori, k.kode as kode_kategori 
+              FROM produk p 
+              LEFT JOIN kategori k ON p.kategori_id = k.id 
+              WHERE 1=1";
+    $count_query = "SELECT COUNT(*) as total 
+                    FROM produk p 
+                    LEFT JOIN kategori k ON p.kategori_id = k.id 
+                    WHERE 1=1";
+} else {
+    $query = "SELECT p.*, k.nama_kategori 
+              FROM produk p 
+              LEFT JOIN kategori k ON p.kategori_id = k.id 
+              WHERE 1=1";
+    $count_query = "SELECT COUNT(*) as total 
+                    FROM produk p 
+                    LEFT JOIN kategori k ON p.kategori_id = k.id 
+                    WHERE 1=1";
+}
 
 if(!empty($search)) {
     $search_condition = " AND (p.nama_produk LIKE '%$search%' OR p.kode LIKE '%$search%')";
@@ -219,7 +254,12 @@ while($row = mysqli_fetch_assoc($kategori_query)) {
     $kategori_list[] = $row;
 }
 
-$kategori_filter_query = mysqli_query($conn, "SELECT DISTINCT k.id, k.nama_kategori FROM kategori k JOIN produk p ON k.id = p.kategori_id ORDER BY k.nama_kategori");
+// Query untuk filter kategori - AMAN
+if($has_kode_column) {
+    $kategori_filter_query = mysqli_query($conn, "SELECT DISTINCT k.id, k.nama_kategori, k.kode FROM kategori k JOIN produk p ON k.id = p.kategori_id ORDER BY k.nama_kategori");
+} else {
+    $kategori_filter_query = mysqli_query($conn, "SELECT DISTINCT k.id, k.nama_kategori FROM kategori k JOIN produk p ON k.id = p.kategori_id ORDER BY k.nama_kategori");
+}
 $kategori_filter_list = [];
 while($row = mysqli_fetch_assoc($kategori_filter_query)) {
     $kategori_filter_list[] = $row;
@@ -653,6 +693,9 @@ footer {
                             <?php foreach($kategori_filter_list as $kat): ?>
                                 <option value="<?= $kat['id'] ?>" <?= $kategori_filter == $kat['id'] ? 'selected' : '' ?>>
                                     <?= $kat['nama_kategori'] ?>
+                                    <?php if(isset($kat['kode'])): ?>
+                                        (<?= $kat['kode'] ?>)
+                                    <?php endif; ?>
                                 </option>
                             <?php endforeach; ?>
                         </select>
@@ -721,10 +764,15 @@ footer {
                                 </div>
                             </td>
                             <td>
-                                <code><?= $row['kode']; ?></code>
+                                <code class="fw-bold"><?= $row['kode']; ?></code>
                             </td>
                             <td>
-                                <span class="badge bg-secondary"><?= $row['nama_kategori'] ?? 'Umum' ?></span>
+                                <span class="badge bg-secondary">
+                                    <?= $row['nama_kategori'] ?? 'Umum' ?>
+                                    <?php if(isset($row['kode_kategori']) && !empty($row['kode_kategori'])): ?>
+                                        <br><small><?= $row['kode_kategori']; ?></small>
+                                    <?php endif; ?>
+                                </span>
                             </td>
                             <td>
                                 <strong class="text-success">Rp<?= number_format($row['harga'],0,',','.'); ?></strong>
@@ -786,6 +834,9 @@ footer {
                                                     <?php foreach($kategori_list as $kat): ?>
                                                         <option value="<?= $kat['id'] ?>" <?= $row['kategori_id'] == $kat['id'] ? 'selected' : '' ?>>
                                                             <?= $kat['nama_kategori'] ?>
+                                                            <?php if(isset($kat['kode'])): ?>
+                                                                (<?= $kat['kode'] ?>)
+                                                            <?php endif; ?>
                                                         </option>
                                                     <?php endforeach; ?>
                                                 </select>
@@ -891,7 +942,7 @@ footer {
                 <table class="table table-hover align-middle">
                     <thead>
                         <tr>
-                            <th width="60">ID</th>
+                            <th width="100">Kode Kategori</th>
                             <th>Nama Kategori</th>
                             <th width="120" class="text-center">Jumlah Produk</th>
                             <th width="150" class="text-center">Aksi</th>
@@ -908,7 +959,16 @@ footer {
                             while($kat = mysqli_fetch_assoc($kategori_display)): 
                         ?>
                         <tr>
-                            <td><strong>#<?= $kat['id']; ?></strong></td>
+                            <td>
+                                <?php if(isset($kat['kode']) && !empty($kat['kode'])): ?>
+                                    <code class="fw-bold text-primary"><?= $kat['kode']; ?></code>
+                                <?php else: ?>
+                                    <!-- Generate kode jika kosong -->
+                                    <code class="fw-bold text-primary">
+                                        <?= strtoupper(substr(preg_replace('/[^A-Za-z]/', '', $kat['nama_kategori']), 0, 3)) . '-' . str_pad($kat['id'], 3, '0', STR_PAD_LEFT); ?>
+                                    </code>
+                                <?php endif; ?>
+                            </td>
                             <td>
                                 <span class="badge bg-primary fs-6"><?= $kat['nama_kategori']; ?></span>
                             </td>
@@ -944,6 +1004,11 @@ footer {
                                 </div>
                                 <div class="modal-body">
                                     <input type="hidden" name="id_kategori" value="<?= $kat['id']; ?>">
+                                    <div class="mb-3">
+                                        <label class="form-label">Kode Kategori</label>
+                                        <input type="text" class="form-control" value="<?= $kat['kode'] ?? ''; ?>" readonly style="background-color: #f8f9fa;">
+                                        <div class="form-text text-muted"><small>Kode tidak dapat diubah</small></div>
+                                    </div>
                                     <div class="mb-3">
                                         <label class="form-label">Nama Kategori</label>
                                         <input type="text" name="nama_kategori" class="form-control" value="<?= $kat['nama_kategori']; ?>" required>
@@ -1019,7 +1084,8 @@ footer {
                 <div class="col-md-6">
                     <div class="mb-3">
                         <label class="form-label">Kode Produk</label>
-                        <input type="text" name="kode" class="form-control" placeholder="Kode otomatis" readonly>
+                        <input type="text" name="kode" class="form-control" placeholder="Kode otomatis" id="kodeAuto" readonly style="background-color: #f8f9fa;">
+                        <div class="form-text text-muted"><small>Kode akan di-generate otomatis berdasarkan kategori</small></div>
                     </div>
                 </div>
                 <div class="col-md-6">
@@ -1027,7 +1093,12 @@ footer {
                         <label class="form-label">Kategori</label>
                         <select name="kategori_id" class="form-select" required id="kategoriSelectTambah">
                             <?php foreach($kategori_list as $kat): ?>
-                                <option value="<?= $kat['id'] ?>"><?= $kat['nama_kategori'] ?></option>
+                                <option value="<?= $kat['id'] ?>">
+                                    <?= $kat['nama_kategori'] ?>
+                                    <?php if(isset($kat['kode'])): ?>
+                                        (<?= $kat['kode'] ?>)
+                                    <?php endif; ?>
+                                </option>
                             <?php endforeach; ?>
                         </select>
                     </div>
@@ -1076,6 +1147,10 @@ footer {
                 <label class="form-label">Nama Kategori</label>
                 <input type="text" name="nama_kategori" class="form-control" placeholder="Masukkan nama kategori" required>
             </div>
+            <div class="alert alert-info">
+                <i class="fa fa-info-circle"></i> 
+                Kode kategori akan di-generate otomatis dari 3 huruf pertama nama kategori
+            </div>
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
@@ -1098,66 +1173,61 @@ const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstra
 
 // === Generate kode otomatis berdasarkan kategori ===
 function generateKode(kategoriId, kategoriNama) {
-    const prefix = getKategoriPrefix(kategoriNama);
+    // Ambil prefix dari 3 huruf pertama kategori (hanya huruf)
+    let prefix = kategoriNama.replace(/[^A-Za-z]/g, '').substring(0, 3).toUpperCase();
     
-    // Generate timestamp untuk kode unik
-    const timestamp = Date.now().toString().slice(-6);
-    return `${prefix}${timestamp}`;
-}
-
-function getKategoriPrefix(kategoriNama) {
-    const prefixes = {
-        'laptop': 'LAP',
-        'keyboard': 'KEY', 
-        'mouse': 'MOU',
-        'monitor': 'MON',
-        'printer': 'PRI',
-        'aksesoris': 'ACC',
-        'komputer': 'KOMP',
-        'elektronik': 'ELEK'
-    };
-    
-    const lowerKategori = kategoriNama.toLowerCase();
-    for (const [key, prefix] of Object.entries(prefixes)) {
-        if (lowerKategori.includes(key)) {
-            return prefix;
-        }
+    // Jika kurang dari 3 karakter, tambah X
+    if (prefix.length < 3) {
+        prefix = (prefix + 'XXX').substring(0, 3);
     }
     
-    return 'PROD';
+    // Kirim AJAX request untuk mendapatkan nomor urut berikutnya
+    return new Promise((resolve) => {
+        fetch(`get_next_kode.php?kategori_id=${kategoriId}&prefix=${prefix}`)
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    resolve(data.kode);
+                } else {
+                    // Fallback: gunakan timestamp
+                    const timestamp = Date.now().toString().slice(-3);
+                    resolve(`${prefix}-${timestamp}`);
+                }
+            })
+            .catch(() => {
+                // Fallback jika AJAX gagal
+                const timestamp = Date.now().toString().slice(-3);
+                resolve(`${prefix}-${timestamp}`);
+            });
+    });
 }
 
-// === Inisialisasi kode otomatis ===
-document.addEventListener('DOMContentLoaded', function() {
-    initKodeAutoGenerate();
-    setupRealTimeFilter();
-});
-
-// === Setup kode otomatis ===
-function initKodeAutoGenerate() {
+// === Setup kode otomatis di modal tambah ===
+async function initKodeAutoGenerate() {
     const kodeInputTambah = document.querySelector('#modalTambah input[name="kode"]');
     const kategoriSelectTambah = document.querySelector('#modalTambah select[name="kategori_id"]');
     
     if (kodeInputTambah && kategoriSelectTambah) {
+        // Set default value untuk pertama kali
         const firstOption = kategoriSelectTambah.options[0];
         if (firstOption) {
-            const kategoriNama = firstOption.textContent;
-            kodeInputTambah.value = generateKode(firstOption.value, kategoriNama);
+            const optionText = firstOption.textContent;
+            // Ambil nama kategori tanpa kode dalam kurung
+            const kategoriNama = optionText.split(' (')[0].trim();
+            const generatedKode = await generateKode(firstOption.value, kategoriNama);
+            kodeInputTambah.value = generatedKode;
         }
         
-        kategoriSelectTambah.addEventListener('change', function() {
+        // Event listener untuk perubahan kategori
+        kategoriSelectTambah.addEventListener('change', async function() {
             const selectedOption = this.options[this.selectedIndex];
-            const kategoriNama = selectedOption.textContent;
-            kodeInputTambah.value = generateKode(this.value, kategoriNama);
+            const optionText = selectedOption.textContent;
+            // Ambil nama kategori tanpa kode dalam kurung
+            const kategoriNama = optionText.split(' (')[0].trim();
+            const generatedKode = await generateKode(this.value, kategoriNama);
+            kodeInputTambah.value = generatedKode;
         });
     }
-    
-    const kodeInputsEdit = document.querySelectorAll('.modal [name="kode"]');
-    kodeInputsEdit.forEach(input => {
-        if (input.closest('.modal').id !== 'modalTambah') {
-            input.readOnly = true;
-        }
-    });
 }
 
 // === Real-time Filter ===
@@ -1247,7 +1317,6 @@ function hapusKategori(id, nama) {
 
 // === Tampilkan Detail Produk ===
 function showProductDetail(productId) {
-    // Ambil data produk dari server via AJAX untuk detail yang lebih akurat
     fetch(`get_product_detail.php?id=${productId}`)
         .then(response => response.json())
         .then(product => {
@@ -1290,8 +1359,9 @@ function showProductDetail(productId) {
                         
                         <div class="detail-section">
                             <h6><i class="fa fa-info-circle text-primary"></i> Informasi Produk</h6>
-                            <p class="mb-1"><strong>Kode:</strong> <code>${product.kode}</code></p>
-                            <p class="mb-0 text-muted"><small><i class="fa fa-lock"></i> Kode tidak dapat diubah</small></p>
+                            <p class="mb-1"><strong>Kode:</strong> <code class="fw-bold">${product.kode}</code></p>
+                            <p class="mb-1"><strong>Kode Kategori:</strong> <code>${product.kode_kategori || 'N/A'}</code></p>
+                            <p class="mb-0 text-muted"><small><i class="fa fa-lock"></i> Kode produk tidak dapat diubah</small></p>
                         </div>
                     </div>
                 </div>
@@ -1407,8 +1477,15 @@ function toggleMobileSidebar() {
     document.getElementById('sidebar').classList.toggle('mobile-open');
 }
 
-// Mobile detection
-document.addEventListener('DOMContentLoaded', function() {
+// === Initialize functions ===
+document.addEventListener('DOMContentLoaded', async function() {
+    // Inisialisasi kode otomatis
+    await initKodeAutoGenerate();
+    
+    // Setup real-time filter
+    setupRealTimeFilter();
+    
+    // Mobile detection
     if (window.innerWidth <= 768) {
         document.querySelector('.mobile-toggle').style.display = 'block';
     }

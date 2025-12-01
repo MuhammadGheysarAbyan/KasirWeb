@@ -71,15 +71,15 @@ while($row = mysqli_fetch_assoc($queryProduk)){
     $produkTerlaris[] = $row;
 }
 
-// Transaksi terbaru - FIX: sesuaikan field
+// Transaksi terbaru - UPDATE: ambil kode_transaksi dan format waktu yang benar
 $transaksiTerbaru = [];
 $queryTransaksi = mysqli_query($conn, "
-    SELECT t.id, t.tanggal, t.waktu, COALESCE(t.total, 0) as total, u.username, 
-           COUNT(dt.id) as qty_item
+    SELECT t.kode_transaksi, t.tanggal, t.waktu, COALESCE(t.total, 0) as total, 
+           u.username, COUNT(dt.id) as qty_item
     FROM transaksi t
     JOIN users u ON t.kasir_id = u.id
     LEFT JOIN detail_transaksi dt ON t.id = dt.transaksi_id
-    GROUP BY t.id, t.tanggal, t.waktu, t.total, u.username
+    GROUP BY t.id, t.kode_transaksi, t.tanggal, t.waktu, t.total, u.username
     ORDER BY t.tanggal DESC, t.waktu DESC
     LIMIT 6
 ");
@@ -734,47 +734,71 @@ footer {
 
     <!-- Baris keempat: Transaksi dan Performa -->
     <div class="row g-4 mt-4">
-        <!-- Transaksi Terbaru -->
-        <div class="col-md-6">
-            <div class="summary-card">
-                <h4>
-                    <span><i class="fa fa-clock me-2 text-primary"></i>Transaksi Terbaru</span>
-                    <span class="badge bg-primary">6 Terbaru</span>
-                </h4>
-                <?php if(count($transaksiTerbaru) > 0): ?>
-                    <table class="summary-table">
-                        <thead>
-                            <tr>
-                                <th>ID</th>
-                                <th>Waktu</th>
-                                <th>Kasir</th>
-                                <th>Total</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <?php foreach($transaksiTerbaru as $transaksi): ?>
-                                <tr>
-                                    <td>#<?= $transaksi['id']; ?></td>
-                                    <td>
-                                        <div><?= date('d/m/Y', strtotime($transaksi['tanggal'])); ?></div>
-                                        <small class="text-muted"><?= date('H:i', strtotime($transaksi['tanggal'])); ?></small>
-                                    </td>
-                                    <td><?= htmlspecialchars($transaksi['username']); ?></td>
-                                    <td>
-                                        <div>
-                                            <strong>Rp <?= number_format($transaksi['total'], 0, ',', '.'); ?></strong>
-                                            <div class="text-muted" style="font-size: 12px;"><?= $transaksi['qty_item']; ?> item</div>
-                                        </div>
-                                    </td>
-                                </tr>
-                            <?php endforeach; ?>
-                        </tbody>
-                    </table>
-                <?php else: ?>
-                    <p class="text-center text-muted">Belum ada transaksi</p>
-                <?php endif; ?>
+ <!-- Transaksi Terbaru -->
+<div class="col-md-6">
+    <div class="summary-card">
+        <h4>
+            <span><i class="fa fa-clock me-2 text-primary"></i>Transaksi Terbaru</span>
+            <span class="badge bg-primary">6 Terbaru</span>
+        </h4>
+        <?php if(count($transaksiTerbaru) > 0): ?>
+            <table class="summary-table">
+                <thead>
+                    <tr>
+                        <th>Kode Transaksi</th>
+                        <th>Waktu</th>
+                        <th>Kasir</th>
+                        <th>Total</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <?php foreach($transaksiTerbaru as $transaksi): ?>
+                        <tr>
+                            <td>
+                                <div class="badge bg-light text-dark border">
+                                    <?= htmlspecialchars($transaksi['kode_transaksi']); ?>
+                                </div>
+                            </td>
+                            <td>
+                                <div><?= date('d/m/Y', strtotime($transaksi['tanggal'])); ?></div>
+                                <small class="text-muted">
+                                    <?php 
+                                    // Menampilkan waktu dari field waktu
+                                    if(!empty($transaksi['waktu'])) {
+                                        echo date('H:i', strtotime($transaksi['waktu']));
+                                    } else {
+                                        // Fallback: jika waktu kosong, gunakan tanggal saja
+                                        echo date('H:i', strtotime($transaksi['tanggal']));
+                                    }
+                                    ?>
+                                </small>
+                            </td>
+                            <td>
+                                <div class="d-flex align-items-center">
+                                    <i class="fa fa-user-circle me-2 text-muted"></i>
+                                    <?= htmlspecialchars($transaksi['username']); ?>
+                                </div>
+                            </td>
+                            <td>
+                                <div>
+                                    <strong class="text-success">Rp <?= number_format($transaksi['total'], 0, ',', '.'); ?></strong>
+                                    <div class="text-muted" style="font-size: 12px;">
+                                        <i class="fa fa-box me-1"></i><?= $transaksi['qty_item']; ?> item
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                    <?php endforeach; ?>
+                </tbody>
+            </table>
+        <?php else: ?>
+            <div class="text-center py-4">
+                <i class="fa fa-receipt fa-3x text-muted mb-3"></i>
+                <p class="text-muted">Belum ada transaksi</p>
             </div>
-        </div>
+        <?php endif; ?>
+    </div>
+</div>
 
         <!-- Performa Kasir -->
         <div class="col-md-6">

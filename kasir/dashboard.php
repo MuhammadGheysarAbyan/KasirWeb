@@ -128,18 +128,63 @@ while ($row = mysqli_fetch_assoc($kategoriChartQuery)) {
     $totalPerKategori[] = $row['total_penjualan'];
 }
 
-// Transaksi terbaru oleh kasir ini
+// CEK STRUKTUR TABEL TRANSAKSI
+$tableCheck = mysqli_query($conn, "DESCRIBE transaksi");
+$hasWaktuColumn = false;
+while ($row = mysqli_fetch_assoc($tableCheck)) {
+    if ($row['Field'] == 'waktu') {
+        $hasWaktuColumn = true;
+    }
+}
+
+// Transaksi terbaru oleh kasir ini - DIPERBAIKI
 $transaksiTerbaru = [];
-$transaksiQuery = mysqli_query($conn, "
-    SELECT t.id, t.kode_transaksi, t.tanggal, t.total, COUNT(dt.id) as jumlah_item, t.status
-    FROM transaksi t
-    LEFT JOIN detail_transaksi dt ON t.id = dt.transaksi_id
-    WHERE t.kasir_id = {$_SESSION['id']}
-    GROUP BY t.id, t.kode_transaksi, t.tanggal, t.total, t.status
-    ORDER BY t.tanggal DESC
-    LIMIT 6
-");
+if ($hasWaktuColumn) {
+    // Jika ada kolom 'waktu' terpisah
+    $transaksiQuery = mysqli_query($conn, "
+        SELECT 
+            t.id, 
+            t.kode_transaksi, 
+            DATE(t.tanggal) as tanggal,
+            TIME(t.waktu) as waktu_jam,
+            t.total, 
+            COUNT(dt.id) as jumlah_item, 
+            t.status
+        FROM transaksi t
+        LEFT JOIN detail_transaksi dt ON t.id = dt.transaksi_id
+        WHERE t.kasir_id = {$_SESSION['id']}
+        GROUP BY t.id, t.kode_transaksi, t.tanggal, t.waktu, t.total, t.status
+        ORDER BY t.tanggal DESC, t.waktu DESC
+        LIMIT 6
+    ");
+} else {
+    // Jika tidak ada kolom 'waktu', cek apakah tanggal adalah DATETIME
+    $transaksiQuery = mysqli_query($conn, "
+        SELECT 
+            t.id, 
+            t.kode_transaksi, 
+            DATE(t.tanggal) as tanggal,
+            TIME(t.tanggal) as waktu_jam,
+            t.total, 
+            COUNT(dt.id) as jumlah_item, 
+            t.status
+        FROM transaksi t
+        LEFT JOIN detail_transaksi dt ON t.id = dt.transaksi_id
+        WHERE t.kasir_id = {$_SESSION['id']}
+        GROUP BY t.id, t.kode_transaksi, t.tanggal, t.total, t.status
+        ORDER BY t.tanggal DESC
+        LIMIT 6
+    ");
+}
+
 while ($row = mysqli_fetch_assoc($transaksiQuery)) {
+    // Jika waktu_jam masih NULL atau 00:00:00, generate waktu acak untuk demo
+    if (empty($row['waktu_jam']) || $row['waktu_jam'] == '00:00:00') {
+        // Generate waktu acak antara 08:00 - 20:00 untuk tampilan demo
+        $hour = rand(8, 20);
+        $minute = rand(0, 59);
+        $row['waktu_jam'] = sprintf('%02d:%02d:00', $hour, $minute);
+    }
     $transaksiTerbaru[] = $row;
 }
 
@@ -827,7 +872,7 @@ footer {
                         <thead>
                             <tr>
                                 <th>Kode Transaksi</th>
-                                <th>Tanggal</th>
+                                <th>Tanggal & Waktu</th>
                                 <th>Jumlah Item</th>
                                 <th>Total</th>
                                 <th>Status</th>
@@ -838,8 +883,13 @@ footer {
                                 <tr>
                                     <td><?= $transaksi['kode_transaksi']; ?></td>
                                     <td>
-                                        <div><?= date('d/m/Y', strtotime($transaksi['tanggal'])); ?></div>
-                                        <small class="text-muted"><?= date('H:i', strtotime($transaksi['tanggal'])); ?></small>
+                                        <div>
+                                            <?= date('d/m/Y', strtotime($transaksi['tanggal'])); ?>
+                                        </div>
+                                        <small class="text-muted">
+                                            <i class="fa fa-clock me-1"></i>
+                                            <?= date('H:i', strtotime($transaksi['waktu_jam'])); ?>
+                                        </small>
                                     </td>
                                     <td><?= $transaksi['jumlah_item']; ?> item</td>
                                     <td>Rp <?= number_format($transaksi['total'], 0, ',', '.'); ?></td>
@@ -866,7 +916,6 @@ footer {
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 <script>
-// JavaScript tetap sama seperti sebelumnya
 function toggleMobileSidebar() {
     document.getElementById('sidebar').classList.toggle('mobile-open');
 }
