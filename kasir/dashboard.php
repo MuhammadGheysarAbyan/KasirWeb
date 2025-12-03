@@ -443,15 +443,15 @@ body {
 
 /* Welcome Box */
 .welcome-box {
-    background: linear-gradient(135deg, #3b82f6, #1d4ed8);
-    color: white;
-    padding: 25px;
+    background: #fff;
+    color: #111;
+    padding: 30px;
     border-radius: 15px;
-    margin-bottom: 25px;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.15);
+    margin-bottom: 30px;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    box-shadow: 0 5px 15px rgba(59, 130, 246, 0.3);
 }
 .welcome-box h2 { 
     font-weight: 700; 
@@ -459,10 +459,11 @@ body {
     font-size: 1.8rem;
 }
 .welcome-box .date-info {
-    background: rgba(255, 255, 255, 0.2);
+    background: #f8fafc;
     padding: 12px 20px;
     border-radius: 10px;
     font-weight: 600;
+    color: #475569;
     font-size: 1rem;
 }
 

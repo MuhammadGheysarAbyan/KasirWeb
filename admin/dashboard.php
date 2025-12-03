@@ -551,7 +551,7 @@ footer {
 <!-- Content -->
 <div class="content" id="content">
     <div class="welcome-box">
-        <h2>Selamat Datang, <?= htmlspecialchars($_SESSION['username']); ?> 🎉</h2>
+        <h2>Selamat Datang, <?= htmlspecialchars($_SESSION['username']); ?> ! 🎉</h2>
         <div class="date-info">
             <i class="fa fa-calendar me-2"></i><?= date('d F Y'); ?>
         </div>

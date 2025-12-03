@@ -7,7 +7,9 @@ if(!isset($_SESSION['id']) || $_SESSION['role'] != 'kasir'){
 include("../config/db.php");
 
 // Ambil data kasir
-$kasir_data = mysqli_fetch_assoc(mysqli_query($conn, "SELECT * FROM users WHERE id = '".$_SESSION['id']."'"));
+$kasir_data = mysqli_fetch_assoc(mysqli_query($conn, 
+    "SELECT * FROM users WHERE id = '".$_SESSION['id']."'"
+));
 
 // Ambil filter tanggal
 $start = $_GET['start'] ?? date('Y-m-01');
@@ -120,7 +122,7 @@ while($row = mysqli_fetch_assoc($top_produk_query)){
     $top_produk[] = $row;
 }
 
-// JAM SIBUK - DIPERBAIKI: Ambil data dari semua transaksi kasir ini
+// Jam Sibuk
 $jam_transaksi = [];
 $jam_query = mysqli_query($conn, "
     SELECT 
@@ -138,581 +140,536 @@ $jam_query = mysqli_query($conn, "
     LIMIT 5
 ");
 
-// Debug: cek hasil query
-if (!$jam_query) {
-    // Jika error, tampilkan pesan error
-    $jam_transaksi_error = mysqli_error($conn);
-} else {
+if ($jam_query) {
     while($row = mysqli_fetch_assoc($jam_query)){
         $jam_transaksi[] = $row;
     }
 }
-
-// Jika tidak ada data jam, coba query alternatif
-if (empty($jam_transaksi)) {
-    $jam_query_alt = mysqli_query($conn, "
-        SELECT 
-            EXTRACT(HOUR FROM waktu) as jam,
-            COUNT(*) as jumlah,
-            COALESCE(SUM(total), 0) as total_pendapatan
-        FROM transaksi 
-        WHERE kasir_id = ".$_SESSION['id']."
-        AND waktu IS NOT NULL
-        GROUP BY EXTRACT(HOUR FROM waktu)
-        ORDER BY jumlah DESC
-        LIMIT 5
-    ");
-    
-    if ($jam_query_alt) {
-        while($row = mysqli_fetch_assoc($jam_query_alt)){
-            $jam_transaksi[] = $row;
-        }
-    }
-}
-
-// Cek struktur tabel untuk debugging
-$table_info = mysqli_query($conn, "DESCRIBE transaksi");
-$columns = [];
-while($col = mysqli_fetch_assoc($table_info)){
-    $columns[] = $col['Field'];
-}
-
-// Debug: Lihat kolom yang ada
-$has_waktu_column = in_array('waktu', $columns);
-$has_tanggal_column = in_array('tanggal', $columns);
 ?>
-
 <!DOCTYPE html>
 <html lang="id">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Riwayat Transaksi</title>
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-<style>
-:root {
-    --primary: #3b82f6;
-    --primary-dark: #2563eb;
-    --secondary: #1e293b;
-    --success: #10b981;
-    --warning: #f59e0b;
-    --danger: #ef4444;
-    --info: #06b6d4;
-    --purple: #8b5cf6;
-    --light: #f8fafc;
-    --dark: #1e293b;
-    --gray: #64748b;
-}
-
-body { 
-    font-family: 'Poppins', sans-serif; 
-    background: #f0f2f5;
-    overflow-x: hidden;
-    color: #374151;
-    padding-bottom: 60px;
-}
-
-/* Sidebar */
-.sidebar { 
-    width: 250px; 
-    height: 100vh; 
-    position: fixed; 
-    top: 0; 
-    left: 0; 
-    background: #1e293b; 
-    color: #fff; 
-    padding-top: 20px; 
-    z-index: 1000;
-    transition: all 0.3s;
-}
-
-.sidebar a { 
-    display: flex; 
-    align-items: center;
-    padding: 12px 20px; 
-    color: #d1d5db; 
-    text-decoration: none; 
-    transition: 0.3s; 
-    border-left: 4px solid transparent;
-}
-.sidebar a i {
-    margin-right: 12px;
-    width: 20px;
-    text-align: center;
-    font-size: 1.1rem;
-}
-.sidebar a:hover { 
-    background: rgba(255,255,255,0.1); 
-    border-left: 4px solid var(--primary); 
-    color: #fff; 
-}
-.sidebar a.active {
-    background: rgba(255,255,255,0.1);
-    border-left: 4px solid var(--primary);
-    color: #fff;
-}
-
-.sidebar .logo { 
-    text-align: center; 
-    margin: 20px 0 30px 0; 
-    padding: 0 15px;
-}
-.sidebar .logo img { 
-    width: 80px; 
-    border-radius: 10px; 
-    margin-bottom: 10px;
-}
-.sidebar .logo-text {
-    color: #fff;
-    font-weight: 700;
-    font-size: 1.1rem;
-    letter-spacing: 0.5px;
-}
-
-/* Topbar */
-.topbar {
-    margin-left: 250px;
-    height: 70px;
-    background: #fff;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 0 30px;
-    border-bottom: 2px solid #e5e7eb;
-    position: sticky;
-    top: 0;
-    z-index: 999;
-    transition: all 0.3s;
-}
-
-.topbar .title {
-    font-weight: 700;
-    font-size: 24px;
-    background: linear-gradient(90deg, var(--secondary), var(--primary));
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-}
-
-.user-menu .btn {
-    border: 2px solid var(--primary);
-    color: var(--primary);
-    font-weight: 600;
-    border-radius: 10px;
-    padding: 8px 16px;
-    transition: all 0.3s;
-}
-.user-menu .btn:hover {
-    background: var(--primary);
-    color: white;
-}
-
-/* Content */
-.content {
-    margin-left: 250px;
-    padding: 30px;
-    min-height: calc(100vh - 100px);
-    transition: all 0.3s;
-    margin-bottom: 80px;
-}
-
-/* Welcome Box */
-.welcome-box {
-    background: #fff;
-    color: var(--dark);
-    padding: 25px 30px;
-    border-radius: 15px;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-    margin-bottom: 30px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    border-left: 5px solid var(--primary);
-}
-.welcome-box h2 { 
-    font-weight: 700; 
-    margin: 0; 
-    font-size: 1.6rem;
-}
-.welcome-box .date-info {
-    background: var(--light);
-    padding: 10px 18px;
-    border-radius: 8px;
-    font-weight: 600;
-    color: var(--gray);
-    font-size: 0.9rem;
-}
-
-/* Stats Grid dengan warna berbeda */
-.stats-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-    gap: 20px;
-    margin-bottom: 30px;
-}
-
-.stat-card {
-    background: #fff;
-    border: none;
-    border-radius: 12px;
-    padding: 20px;
-    text-align: center;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
-    transition: all 0.3s ease;
-    position: relative;
-    overflow: hidden;
-}
-
-.stat-card:nth-child(1) { border-top: 4px solid var(--primary); }
-.stat-card:nth-child(2) { border-top: 4px solid var(--success); }
-.stat-card:nth-child(3) { border-top: 4px solid var(--warning); }
-.stat-card:nth-child(4) { border-top: 4px solid var(--info); }
-
-.stat-card:hover { 
-    transform: translateY(-5px); 
-    box-shadow: 0 8px 25px rgba(0,0,0,0.15); 
-}
-
-.stat-card i { 
-    font-size: 2.2rem; 
-    margin-bottom: 15px;
-}
-
-.stat-card:nth-child(1) i { 
-    background: linear-gradient(135deg, var(--primary), var(--primary-dark));
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-}
-.stat-card:nth-child(2) i { 
-    background: linear-gradient(135deg, var(--success), #0da67e);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-}
-.stat-card:nth-child(3) i { 
-    background: linear-gradient(135deg, var(--warning), #d97706);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-}
-.stat-card:nth-child(4) i { 
-    background: linear-gradient(135deg, var(--info), #0891b2);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-}
-
-.stat-card h3 { 
-    font-weight: 700; 
-    color: var(--dark);
-    margin: 10px 0 5px;
-    font-size: 1.8rem;
-}
-.stat-card p {
-    color: var(--gray);
-    font-weight: 500;
-    margin: 0;
-    font-size: 0.9rem;
-}
-
-/* Filter Container */
-.filter-container {
-    background: #fff;
-    padding: 20px;
-    border-radius: 12px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
-    margin-bottom: 25px;
-}
-.filter-container h5 {
-    font-weight: 600;
-    margin-bottom: 15px;
-    color: var(--dark);
-    display: flex;
-    align-items: center;
-    gap: 10px;
-}
-
-/* Table Container */
-.table-container {
-    background: #fff;
-    border-radius: 12px;
-    overflow: hidden;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
-    margin-bottom: 30px;
-}
-.table th { 
-    background: var(--secondary); 
-    color: #fff; 
-    font-weight: 600;
-    border: none;
-    padding: 15px;
-    text-align: center;
-    font-size: 0.9rem;
-}
-.table td {
-    padding: 12px 15px;
-    vertical-align: middle;
-    border-color: #e5e7eb;
-    text-align: center;
-}
-.table tbody tr:hover {
-    background-color: #f8fafc;
-}
-
-/* Badge Status */
-.badge-status {
-    font-size: 0.75rem;
-    padding: 5px 10px;
-    border-radius: 20px;
-    font-weight: 600;
-}
-
-/* Empty State */
-.empty-state {
-    text-align: center;
-    padding: 40px 20px;
-    color: var(--gray);
-}
-.empty-state i {
-    font-size: 3rem;
-    margin-bottom: 15px;
-    opacity: 0.5;
-}
-.empty-state h5 {
-    font-weight: 600;
-    margin-bottom: 10px;
-}
-
-#footer {
-    margin-left: 250px;
-    text-align: center;
-    padding: 20px 0;
-    color: #6b7280;
-    font-size: 14px;
-    border-top: 1px solid #e5e7eb;
-    position: relative;
-    z-index: 100;
-}
-
-/* Search Box */
-.search-container {
-    position: relative;
-    margin-bottom: 20px;
-}
-.search-container i {
-    position: absolute;
-    left: 15px;
-    top: 50%;
-    transform: translateY(-50%);
-    color: var(--gray);
-}
-.search-container input {
-    padding-left: 45px;
-    border-radius: 8px;
-    border: 2px solid #e5e7eb;
-    transition: all 0.3s ease;
-    height: 45px;
-}
-.search-container input:focus {
-    border-color: var(--primary);
-    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
-}
-
-/* Buttons */
-.btn-export {
-    border-radius: 8px;
-    padding: 8px 20px;
-    font-weight: 600;
-    transition: all 0.3s ease;
-    height: 45px;
-}
-.btn-export:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-}
-
-/* Chart Container */
-.chart-container {
-    background: #fff;
-    border-radius: 12px;
-    padding: 20px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
-    margin-bottom: 20px;
-    height: 320px;
-}
-.chart-container h5 {
-    font-weight: 600;
-    margin-bottom: 15px;
-    color: var(--dark);
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    font-size: 1rem;
-}
-
-/* Top Products */
-.top-products {
-    background: #fff;
-    border-radius: 12px;
-    padding: 20px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
-    height: auto;
-    min-height: 320px;
-    display: flex;
-    flex-direction: column;
-}
-.top-products h5 {
-    font-weight: 600;
-    margin-bottom: 15px;
-    color: var(--dark);
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    font-size: 1rem;
-}
-.product-item {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 10px 0;
-    border-bottom: 1px solid #e5e7eb;
-}
-.product-item:last-child {
-    border-bottom: none;
-}
-.product-info {
-    flex: 1;
-}
-.product-name {
-    font-weight: 500;
-    color: var(--dark);
-    font-size: 0.9rem;
-}
-.product-meta {
-    font-size: 0.8rem;
-    color: var(--gray);
-}
-.products-list {
-    flex: 1;
-    overflow-y: auto;
-    max-height: 250px;
-}
-
-/* Jam Sibuk Section */
-.jam-sibuk {
-    background: #fff;
-    border-radius: 12px;
-    padding: 20px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
-    margin-top: 20px;
-}
-.jam-sibuk h5 {
-    font-weight: 600;
-    margin-bottom: 15px;
-    color: var(--dark);
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    font-size: 1rem;
-}
-.jam-item {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 8px 0;
-    border-bottom: 1px solid #e5e7eb;
-}
-.jam-item:last-child {
-    border-bottom: none;
-}
-.jam-badge {
-    background: linear-gradient(135deg, var(--primary), var(--primary-dark));
-    color: white;
-    padding: 4px 10px;
-    border-radius: 20px;
-    font-size: 0.8rem;
-    font-weight: 600;
-}
-
-/* Mobile Responsive */
-@media (max-width: 768px) {
-    .sidebar {
-        transform: translateX(-100%);
-        width: 280px;
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Riwayat Transaksi - Kasir Computer</title>
+    
+    <!-- CSS Libraries -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+    
+    <!-- JS Libraries -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    
+    <style>
+    /* Reset dan Base Styles */
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
     }
-    .sidebar.mobile-open {
-        transform: translateX(0);
+
+    :root {
+        --primary: #3b82f6;
+        --primary-dark: #2563eb;
+        --secondary: #1e293b;
+        --success: #10b981;
+        --warning: #f59e0b;
+        --danger: #ef4444;
+        --info: #06b6d4;
+        --light: #f8fafc;
+        --dark: #1e293b;
+        --gray: #64748b;
     }
-    .topbar, .content, .footer-fixed {
-        margin-left: 0;
+
+    html, body {
+        height: 100%;
     }
-    .mobile-toggle {
-        display: block !important;
-    }
-    .stats-grid {
-        grid-template-columns: 1fr;
-    }
-    .welcome-box {
+
+    body { 
+        font-family: 'Poppins', sans-serif; 
+        background: #f0f2f5;
+        overflow-x: hidden;
+        color: #374151;
+        display: flex;
         flex-direction: column;
-        gap: 15px;
-        text-align: center;
-        padding: 20px;
+        min-height: 100vh;
     }
-    .topbar {
+
+    /* Sidebar */
+    .sidebar { 
+        width: 250px; 
+        height: 100vh; 
+        position: fixed; 
+        top: 0; 
+        left: 0; 
+        background: #1e293b; 
+        color: #fff; 
+        padding-top: 20px; 
+        z-index: 1000;
+        transition: all 0.3s;
+    }
+
+    .sidebar a { 
+        display: flex; 
+        align-items: center;
+        padding: 12px 20px; 
+        color: #d1d5db; 
+        text-decoration: none; 
+        transition: 0.3s; 
+        border-left: 4px solid transparent;
+    }
+    .sidebar a i {
+        margin-right: 12px;
+        width: 20px;
+        text-align: center;
+        font-size: 1.1rem;
+    }
+    .sidebar a:hover { 
+        background: rgba(255,255,255,0.1); 
+        border-left: 4px solid var(--primary); 
+        color: #fff; 
+    }
+    .sidebar a.active {
+        background: rgba(255,255,255,0.1);
+        border-left: 4px solid var(--primary);
+        color: #fff;
+    }
+
+    .sidebar .logo { 
+        text-align: center; 
+        margin: 20px 0 30px 0; 
         padding: 0 15px;
     }
+    .sidebar .logo img { 
+        width: 80px; 
+        border-radius: 10px; 
+        margin-bottom: 10px;
+    }
+    .sidebar .logo-text {
+        color: #fff;
+        font-weight: 700;
+        font-size: 1.1rem;
+        letter-spacing: 0.5px;
+    }
+
+    /* Topbar */
+    .topbar {
+        margin-left: 250px;
+        height: 70px;
+        background: #fff;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0 30px;
+        border-bottom: 2px solid #e5e7eb;
+        position: sticky;
+        top: 0;
+        z-index: 999;
+        transition: all 0.3s;
+        flex-shrink: 0;
+    }
+
+    .topbar .title {
+        font-weight: 700;
+        font-size: 24px;
+        background: linear-gradient(90deg, var(--secondary), var(--primary));
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+
+    .user-menu .btn {
+        border: 2px solid var(--primary);
+        color: var(--primary);
+        font-weight: 600;
+        border-radius: 10px;
+        padding: 8px 16px;
+        transition: all 0.3s;
+    }
+    .user-menu .btn:hover {
+        background: var(--primary);
+        color: white;
+    }
+
+    /* Content - FIXED FOR FOOTER */
     .content {
-        padding: 20px 15px;
-        margin-bottom: 100px;
+        margin-left: 250px;
+        padding: 30px;
+        flex: 1 0 auto;
+        transition: all 0.3s;
     }
-    .table-responsive {
-        font-size: 0.85rem;
+
+    /* Welcome Box */
+    .welcome-box {
+        background: #fff;
+        color: var(--dark);
+        padding: 25px 30px;
+        border-radius: 15px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        margin-bottom: 30px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-left: 5px solid var(--primary);
     }
+    .welcome-box h2 { 
+        font-weight: 700; 
+        margin: 0; 
+        font-size: 1.6rem;
+    }
+    .welcome-box .date-info {
+        background: var(--light);
+        padding: 10px 18px;
+        border-radius: 8px;
+        font-weight: 600;
+        color: var(--gray);
+        font-size: 0.9rem;
+    }
+
+    /* Stats Grid */
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+        gap: 20px;
+        margin-bottom: 30px;
+    }
+
+    .stat-card {
+        background: #fff;
+        border: none;
+        border-radius: 12px;
+        padding: 20px;
+        text-align: center;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .stat-card:nth-child(1) { border-top: 4px solid var(--primary); }
+    .stat-card:nth-child(2) { border-top: 4px solid var(--success); }
+    .stat-card:nth-child(3) { border-top: 4px solid var(--warning); }
+    .stat-card:nth-child(4) { border-top: 4px solid var(--info); }
+
+    .stat-card:hover { 
+        transform: translateY(-5px); 
+        box-shadow: 0 8px 25px rgba(0,0,0,0.15); 
+    }
+
+    .stat-card i { 
+        font-size: 2.2rem; 
+        margin-bottom: 15px;
+    }
+
+    .stat-card:nth-child(1) i { 
+        background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+    .stat-card:nth-child(2) i { 
+        background: linear-gradient(135deg, var(--success), #0da67e);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+    .stat-card:nth-child(3) i { 
+        background: linear-gradient(135deg, var(--warning), #d97706);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+    .stat-card:nth-child(4) i { 
+        background: linear-gradient(135deg, var(--info), #0891b2);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+
+    .stat-card h3 { 
+        font-weight: 700; 
+        color: var(--dark);
+        margin: 10px 0 5px;
+        font-size: 1.8rem;
+    }
+    .stat-card p {
+        color: var(--gray);
+        font-weight: 500;
+        margin: 0;
+        font-size: 0.9rem;
+    }
+
+    /* Filter Container */
+    .filter-container {
+        background: #fff;
+        padding: 20px;
+        border-radius: 12px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+        margin-bottom: 25px;
+    }
+    .filter-container h5 {
+        font-weight: 600;
+        margin-bottom: 15px;
+        color: var(--dark);
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    /* Table Container */
+    .table-container {
+        background: #fff;
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+        margin-bottom: 30px;
+    }
+    .table th { 
+        background: var(--secondary); 
+        color: #fff; 
+        font-weight: 600;
+        border: none;
+        padding: 15px;
+        text-align: center;
+        font-size: 0.9rem;
+    }
+    .table td {
+        padding: 12px 15px;
+        vertical-align: middle;
+        border-color: #e5e7eb;
+        text-align: center;
+    }
+    .table tbody tr:hover {
+        background-color: #f8fafc;
+    }
+
+    /* Badge Status */
+    .badge-status {
+        font-size: 0.75rem;
+        padding: 5px 10px;
+        border-radius: 20px;
+        font-weight: 600;
+    }
+
+    /* Empty State */
+    .empty-state {
+        text-align: center;
+        padding: 40px 20px;
+        color: var(--gray);
+    }
+    .empty-state i {
+        font-size: 3rem;
+        margin-bottom: 15px;
+        opacity: 0.5;
+    }
+    .empty-state h5 {
+        font-weight: 600;
+        margin-bottom: 10px;
+    }
+
+    /* FOOTER - FIXED POSITION */
+    #footer {
+        margin-left: 250px;
+        text-align: center;
+        padding: 18px 0;
+        color: #6b7280;
+        font-size: 14px;
+        border-top: 1px solid #e5e7eb;
+        flex-shrink: 0;
+        width: calc(100% - 250px);
+        box-sizing: border-box;
+        margin-top: auto;
+    }
+
+    /* Chart Container */
     .chart-container {
-        height: 300px;
+        background: #fff;
+        border-radius: 12px;
+        padding: 20px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+        margin-bottom: 20px;
+        height: 320px;
     }
-     #footer {
-        margin-left: 0;
-        padding: 15px 0;
-        font-size: 12px;
+    .chart-container h5 {
+        font-weight: 600;
+        margin-bottom: 15px;
+        color: var(--dark);
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-size: 1rem;
     }
-}
 
-/* Action Buttons */
-.btn-group-sm .btn {
-    padding: 4px 8px;
-    font-size: 0.8rem;
-    border-radius: 6px;
-}
+    /* Top Products */
+    .top-products {
+        background: #fff;
+        border-radius: 12px;
+        padding: 20px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+        height: auto;
+        min-height: 320px;
+        display: flex;
+        flex-direction: column;
+    }
+    .top-products h5 {
+        font-weight: 600;
+        margin-bottom: 15px;
+        color: var(--dark);
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-size: 1rem;
+    }
+    .product-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 10px 0;
+        border-bottom: 1px solid #e5e7eb;
+    }
+    .product-item:last-child {
+        border-bottom: none;
+    }
+    .product-info {
+        flex: 1;
+    }
+    .product-name {
+        font-weight: 500;
+        color: var(--dark);
+        font-size: 0.9rem;
+    }
+    .product-meta {
+        font-size: 0.8rem;
+        color: var(--gray);
+    }
+    .products-list {
+        flex: 1;
+        overflow-y: auto;
+        max-height: 250px;
+    }
 
-/* Modal */
-.modal-content {
-    border-radius: 12px;
-    border: none;
-}
-.modal-header {
-    border-radius: 12px 12px 0 0;
-}
+    /* Jam Sibuk Section */
+    .jam-sibuk {
+        background: #fff;
+        border-radius: 12px;
+        padding: 20px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+        margin-top: 20px;
+    }
+    .jam-sibuk h5 {
+        font-weight: 600;
+        margin-bottom: 15px;
+        color: var(--dark);
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-size: 1rem;
+    }
+    .jam-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 8px 0;
+        border-bottom: 1px solid #e5e7eb;
+    }
+    .jam-item:last-child {
+        border-bottom: none;
+    }
+    .jam-badge {
+        background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+        color: white;
+        padding: 4px 10px;
+        border-radius: 20px;
+        font-size: 0.8rem;
+        font-weight: 600;
+    }
 
-/* Pagination */
-.pagination .page-link {
-    border-radius: 6px;
-    margin: 0 3px;
-    border: none;
-    color: var(--dark);
-}
-.pagination .page-item.active .page-link {
-    background: var(--primary);
-    border-color: var(--primary);
-}
+    /* Search Box */
+    .search-container {
+        position: relative;
+    }
+    .search-container i {
+        position: absolute;
+        left: 12px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: var(--gray);
+        z-index: 1;
+    }
+    .search-container input {
+        padding-left: 40px;
+        border-radius: 8px;
+        border: 2px solid #e5e7eb;
+        transition: all 0.3s;
+        height: 45px;
+        width: 100%;
+    }
+    .search-container input:focus {
+        border-color: var(--primary);
+        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+    }
 
-/* Chart specific */
-.chart-wrapper {
-    position: relative;
-    height: 250px;
-    width: 100%;
-}
-</style>
+    /* Buttons */
+    .btn-export {
+        border-radius: 8px;
+        padding: 8px 15px;
+        font-weight: 600;
+        transition: all 0.3s;
+        height: 45px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 45px;
+    }
+
+    /* Chart specific */
+    .chart-wrapper {
+        position: relative;
+        height: 250px;
+        width: 100%;
+    }
+
+    /* Mobile Responsive */
+    @media (max-width: 768px) {
+        .sidebar {
+            transform: translateX(-100%);
+            width: 280px;
+        }
+        .sidebar.mobile-open {
+            transform: translateX(0);
+        }
+        .topbar, .content, #footer {
+            margin-left: 0;
+            width: 100%;
+        }
+        .mobile-toggle {
+            display: block !important;
+        }
+        .stats-grid {
+            grid-template-columns: 1fr;
+        }
+        .welcome-box {
+            flex-direction: column;
+            gap: 15px;
+            text-align: center;
+            padding: 20px;
+        }
+        .topbar {
+            padding: 0 15px;
+            height: 60px;
+        }
+        .content {
+            padding: 20px 15px;
+        }
+        .table-responsive {
+            font-size: 0.85rem;
+        }
+        .chart-container {
+            height: 300px;
+        }
+        #footer {
+            padding: 15px 0;
+            font-size: 12px;
+        }
+    }
+    </style>
 </head>
 <body>
 
@@ -757,9 +714,7 @@ body {
         <button class="btn btn-primary me-3 mobile-toggle" style="display: none; border-radius: 6px; padding: 6px 12px;" onclick="toggleMobileSidebar()">
             <i class="fa fa-bars"></i>
         </button>
-        <div class="title">
-            Riwayat Transaksi
-        </div>
+        <div class="title">Riwayat Transaksi</div>
     </div>
     <div class="user-menu">
         <div class="dropdown">
@@ -786,7 +741,7 @@ body {
     </div>
 </div>
 
-<!-- Content -->
+<!-- Main Content -->
 <div class="content" id="content">
     <!-- Welcome Box -->
     <div class="welcome-box">
@@ -802,7 +757,7 @@ body {
         </div>
     </div>
 
-    <!-- Statistik dengan warna berbeda -->
+    <!-- Statistik -->
     <div class="stats-grid">
         <div class="stat-card">
             <i class="fa fa-receipt"></i>
@@ -827,7 +782,7 @@ body {
     </div>
 
     <div class="row">
-        <!-- Chart dan Top Products -->
+        <!-- Kolom Kiri: Chart dan Statistik -->
         <div class="col-lg-4">
             <!-- Grafik Transaksi -->
             <div class="chart-container">
@@ -862,17 +817,14 @@ body {
                 </div>
             </div>
 
-            <!-- Jam Sibuk - DIPERBAIKI -->
+            <!-- Jam Sibuk -->
             <div class="jam-sibuk">
                 <h5><i class="fa fa-clock text-info"></i> Jam Sibuk Anda</h5>
                 <?php if(count($jam_transaksi) > 0): ?>
-                    <?php foreach($jam_transaksi as $jam): 
-                        $jam_display = $jam['jam'] . ':00';
-                        $jumlah_display = $jam['jumlah'] . ' transaksi';
-                    ?>
+                    <?php foreach($jam_transaksi as $jam): ?>
                     <div class="jam-item">
-                        <span class="fw-medium"><?= $jam_display ?></span>
-                        <span class="jam-badge"><?= $jumlah_display ?></span>
+                        <span class="fw-medium"><?= $jam['jam'] . ':00' ?></span>
+                        <span class="jam-badge"><?= $jam['jumlah'] ?> transaksi</span>
                     </div>
                     <?php endforeach; ?>
                 <?php else: ?>
@@ -880,15 +832,11 @@ body {
                         <span class="text-muted">Belum ada data jam transaksi</span>
                         <small class="text-muted">-</small>
                     </div>
-                    <!-- Debug info (optional) -->
-                    <!-- <div class="jam-item">
-                        <small class="text-muted">Kolom: <?= implode(', ', $columns) ?></small>
-                    </div> -->
                 <?php endif; ?>
             </div>
         </div>
 
-        <!-- Tabel Riwayat -->
+        <!-- Kolom Kanan: Tabel Riwayat -->
         <div class="col-lg-8">
             <!-- Filter dan Pencarian -->
             <div class="filter-container">
@@ -902,10 +850,10 @@ body {
                                 <i class="fa fa-search"></i>
                                 <input type="text" id="searchInput" class="form-control" placeholder="Cari transaksi...">
                             </div>
-                            <button class="btn btn-success btn-export" onclick="exportToPDF()">
+                            <button class="btn btn-success btn-export" onclick="exportToPDF()" title="Export PDF">
                                 <i class="fa fa-file-pdf"></i>
                             </button>
-                            <button class="btn btn-success btn-export" onclick="exportToExcel()">
+                            <button class="btn btn-success btn-export" onclick="exportToExcel()" title="Export Excel">
                                 <i class="fa fa-file-excel"></i>
                             </button>
                         </div>
@@ -934,7 +882,7 @@ body {
                             <button type="submit" class="btn btn-primary btn-sm flex-fill">
                                 <i class="fa fa-filter me-2"></i>Filter
                             </button>
-                            <a href="riwayat.php" class="btn btn-outline-secondary btn-sm">
+                            <a href="riwayat.php" class="btn btn-outline-secondary btn-sm" title="Reset Filter">
                                 <i class="fa fa-refresh"></i>
                             </a>
                         </div>
@@ -961,17 +909,9 @@ body {
                             <?php if(mysqli_num_rows($riwayat) > 0): ?>
                                 <?php while($r = mysqli_fetch_assoc($riwayat)): 
                                     $status_class = $r['status'] == 'selesai' ? 'bg-success' : 'bg-warning';
-                                    // Perbaikan tampilan waktu
-                                    $waktu_display = '00:00';
-                                    if (!empty($r['waktu']) && $r['waktu'] != '00:00:00') {
-                                        $waktu_display = date('H:i', strtotime($r['waktu']));
-                                    } else {
-                                        // Jika tidak ada waktu, ambil dari timestamp acak
-                                        $timestamp = strtotime($r['tanggal']);
-                                        $hour = rand(8, 20);
-                                        $minute = rand(0, 59);
-                                        $waktu_display = sprintf('%02d:%02d', $hour, $minute);
-                                    }
+                                    $waktu_display = !empty($r['waktu']) && $r['waktu'] != '00:00:00' ? 
+                                        date('H:i', strtotime($r['waktu'])) : 
+                                        sprintf('%02d:%02d', rand(8, 20), rand(0, 59));
                                 ?>
                                 <tr>
                                     <td>
@@ -1017,15 +957,13 @@ body {
                                             <button class="btn btn-outline-primary" 
                                                     onclick="showDetail(<?= $r['id'] ?>)"
                                                     data-bs-toggle="tooltip" 
-                                                    title="Lihat Detail"
-                                                    style="padding: 4px 8px;">
+                                                    title="Lihat Detail">
                                                 <i class="fa fa-eye"></i>
                                             </button>
                                             <button class="btn btn-outline-success" 
                                                     onclick="printStruk(<?= $r['id'] ?>)"
                                                     data-bs-toggle="tooltip" 
-                                                    title="Cetak Struk"
-                                                    style="padding: 4px 8px;">
+                                                    title="Cetak Struk">
                                                 <i class="fa fa-print"></i>
                                             </button>
                                         </div>
@@ -1070,6 +1008,7 @@ body {
     </div>
 </div>
 
+<!-- Footer - FIXED AT BOTTOM -->
 <footer id="footer">
     &copy; <?= date('Y'); ?> Kasir Computer — Developed by Abyan
 </footer>
@@ -1115,16 +1054,16 @@ document.addEventListener('DOMContentLoaded', function() {
     if (!endDate.value) {
         endDate.value = '<?= date("Y-m-d") ?>';
     }
-});
-
-// Search functionality
-document.getElementById('searchInput').addEventListener('keyup', function() {
-    const filter = this.value.toLowerCase();
-    const rows = document.querySelectorAll('#riwayatTable tbody tr');
     
-    rows.forEach(row => {
-        const text = row.textContent.toLowerCase();
-        row.style.display = text.includes(filter) ? '' : 'none';
+    // Search functionality
+    document.getElementById('searchInput').addEventListener('keyup', function() {
+        const filter = this.value.toLowerCase();
+        const rows = document.querySelectorAll('#riwayatTable tbody tr');
+        
+        rows.forEach(row => {
+            const text = row.textContent.toLowerCase();
+            row.style.display = text.includes(filter) ? '' : 'none';
+        });
     });
 });
 
@@ -1213,19 +1152,6 @@ function initializeChart() {
                         labels: {
                             font: {
                                 size: 11
-                            }
-                        }
-                    },
-                    tooltip: {
-                        mode: 'index',
-                        intersect: false,
-                        callbacks: {
-                            label: function(context) {
-                                if (context.datasetIndex === 0) {
-                                    return `Transaksi: ${context.parsed.y}`;
-                                } else {
-                                    return `Pendapatan: Rp ${(context.parsed.y * 1000).toLocaleString('id-ID')}`;
-                                }
                             }
                         }
                     }

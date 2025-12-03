@@ -620,7 +620,7 @@ footer {
             <i class="fa fa-bars"></i>
         </button>
         <div class="title">
-            <i class="fa fa-shopping-cart me-2"></i>Transaksi Kasir
+            Transaksi Kasir
         </div>
     </div>
     <div class="user-menu">
@@ -673,14 +673,6 @@ footer {
             <?php endif; ?>
         </div>
     <?php endif; ?>
-
-    <!-- Welcome Box -->
-    <div class="welcome-box">
-        <h2>Transaksi Baru 🛒</h2>
-        <div class="date-info">
-            <i class="fa fa-calendar me-2"></i><?= date('d F Y'); ?>
-        </div>
-    </div>
 
     <!-- Quick Stats -->
     <div class="stats-container">
