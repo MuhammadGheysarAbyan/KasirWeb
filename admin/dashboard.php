@@ -225,6 +225,8 @@ body {
     color: #fff;
     font-weight: 700;
     font-size: 1.1rem;
+    letter-spacing: 0.5px;
+    margin-top: 15px;
 }
 
 /* Topbar Styles */

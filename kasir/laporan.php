@@ -210,6 +210,8 @@ body {
     color: #fff;
     font-weight: 700;
     font-size: 1.1rem;
+    letter-spacing: 0.5px;
+    margin-top: 15px;
 }
 
 /* Topbar Styles */
@@ -518,16 +520,20 @@ footer {
                     <label class="form-label">Laporan Bulanan</label>
                     <input type="month" class="form-control" name="bulan" value="<?= htmlspecialchars($filter_bulan); ?>">
                 </div>
-                <div class="col-md-4 d-flex align-items-end">
-                    <button type="submit" class="btn btn-primary w-100 me-2">
-                        <i class="fa fa-filter me-2"></i>Filter
-                    </button>
-                    <?php if($filter_tanggal || $filter_bulan != date('Y-m')): ?>
-                    <a href="laporan.php" class="btn btn-outline-secondary">
-                        <i class="fa fa-refresh"></i>
-                    </a>
-                    <?php endif; ?>
-                </div>
+<div class="col-md-4">
+    <div class="d-flex gap-2 align-items-end" style="margin-top: 37px;">
+        <button type="submit" class="btn btn-primary w-100">
+            <i class="fa fa-filter me-2"></i>Filter
+        </button>
+
+        <?php if($filter_tanggal || $filter_bulan != date('Y-m')): ?>
+        <a href="laporan.php" class="btn btn-outline-secondary">
+            <i class="fa fa-refresh"></i>
+        </a>
+        <?php endif; ?>
+    </div>
+</div>
+
             </form>
         </div>
     </div>
