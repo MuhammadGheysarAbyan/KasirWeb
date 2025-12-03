@@ -137,7 +137,7 @@ while ($row = mysqli_fetch_assoc($tableCheck)) {
     }
 }
 
-// Transaksi terbaru oleh kasir ini - DIPERBAIKI
+// Transaksi terbaru oleh kasir ini
 $transaksiTerbaru = [];
 if ($hasWaktuColumn) {
     // Jika ada kolom 'waktu' terpisah
@@ -233,13 +233,14 @@ $colorsKategori = ['#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6', '#06b6
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <style>
-/* CSS styles tetap sama seperti sebelumnya */
+/* SAMA PERSIS DENGAN ADMIN DASHBOARD */
 body {
     font-family: 'Poppins', sans-serif;
     background: #f0f2f5;
     overflow-x: hidden;
 }
 
+/* Sidebar Styles - Fixed tanpa collapse */
 .sidebar { 
     width: 250px; 
     height: 100vh; 
@@ -294,6 +295,7 @@ body {
     font-size: 1.1rem;
 }
 
+/* Topbar Styles - SAMA PERSIS */
 .topbar {
     margin-left: 250px;
     height: 70px;
@@ -328,22 +330,128 @@ body {
     color: white;
 }
 
+/* Content Styles - SAMA PERSIS */
 .content {
     margin-left: 250px;
     padding: 30px;
     min-height: 100vh;
 }
 
-.welcome-box {
+/* Stats Container - SAMA PERSIS */
+.stats-container {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 15px;
+    margin-bottom: 20px;
+}
+.stat-card {
     background: #fff;
-    color: #111;
-    padding: 30px;
+    padding: 20px;
+    border-radius: 12px;
+    text-align: center;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    transition: transform 0.3s ease;
+}
+.stat-card:hover {
+    transform: translateY(-5px);
+}
+.stat-card i {
+    font-size: 24px;
+    margin-bottom: 10px;
+}
+.stat-number {
+    font-size: 24px;
+    font-weight: 700;
+    color: #1e293b;
+}
+.stat-label {
+    font-size: 14px;
+    color: #6b7280;
+}
+
+/* Card Styling - SAMA PERSIS */
+.card {
+    border: none;
     border-radius: 15px;
-    box-shadow: 0 5px 20px rgba(0,0,0,0.15);
-    margin-bottom: 30px;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+    margin-bottom: 25px;
+}
+
+/* Graph Card - DISESUAIKAN */
+.graph-card, .summary-card {
+    background: #fff;
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    margin-bottom: 20px;
+    height: 100%;
+}
+.graph-card h4, .summary-card h4 {
+    font-weight: 600;
+    margin-bottom: 20px;
+    color: #1e293b;
+    border-bottom: 2px solid #e5e7eb;
+    padding-bottom: 10px;
+}
+
+/* Table Styling - SAMA PERSIS */
+.table {
+    margin-bottom: 0;
+}
+
+.table th {
+    background-color: #f8fafc;
+    border-bottom: 2px solid #e5e7eb;
+    font-weight: 600;
+    color: #374151;
+    padding: 15px;
+}
+
+.table td {
+    padding: 15px;
+    vertical-align: middle;
+    border-color: #e5e7eb;
+}
+
+/* Badge Styling - SAMA PERSIS */
+.badge {
+    padding: 8px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+/* Button Styling - SAMA PERSIS */
+.btn-sm {
+    padding: 6px 12px;
+    border-radius: 8px;
+    font-size: 13px;
+}
+
+/* Form Controls - SAMA PERSIS */
+.form-control, .form-select {
+    border: 2px solid #e5e7eb;
+    border-radius: 10px;
+    padding: 10px 15px;
+    transition: all 0.3s;
+}
+
+.form-control:focus, .form-select:focus {
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+/* Welcome Box */
+.welcome-box {
+    background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+    color: white;
+    padding: 25px;
+    border-radius: 15px;
+    margin-bottom: 25px;
     display: flex;
     justify-content: space-between;
     align-items: center;
+    box-shadow: 0 5px 15px rgba(59, 130, 246, 0.3);
 }
 .welcome-box h2 { 
     font-weight: 700; 
@@ -351,106 +459,19 @@ body {
     font-size: 1.8rem;
 }
 .welcome-box .date-info {
-    background: #f8fafc;
+    background: rgba(255, 255, 255, 0.2);
     padding: 12px 20px;
     border-radius: 10px;
     font-weight: 600;
-    color: #475569;
     font-size: 1rem;
 }
 
-.row .card {
-    border: none;
-    border-radius: 15px;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-    padding: 25px;
-    text-align: center;
-    background: #fff;
-    transition: transform 0.3s, box-shadow 0.3s;
-    height: 100%;
-}
-.row .card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 8px 25px rgba(0,0,0,0.15);
-}
-.row .card i {
-    font-size: 2.5rem;
-    margin-bottom: 15px;
-}
-.row .card h3 {
-    font-weight: 700;
-    color: #111827;
-    margin: 15px 0;
-    font-size: 2rem;
-}
-.row .card h5 {
-    font-weight: 600;
-    color: #374151;
-    margin-bottom: 10px;
-}
-.row .card .card-subtitle {
-    font-size: 14px;
-    color: #6b7280;
-}
-.row .card .trend {
-    font-size: 13px;
-    font-weight: 600;
-    margin-top: 8px;
-}
-.row .card .trend.up { color: #10b981; }
-.row .card .trend.down { color: #ef4444; }
-
-.graph-card, .summary-card {
-    background: #fff;
-    border-radius: 15px;
-    padding: 25px;
-    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-    height: 100%;
-}
-.graph-card h4, .summary-card h4 {
-    font-weight: 600;
-    margin-bottom: 25px;
-    color: #1e293b;
-    border-bottom: 2px solid #e5e7eb;
-    padding-bottom: 15px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    font-size: 1.3rem;
-}
-.graph-card h4 .badge, .summary-card h4 .badge {
-    font-size: 12px;
-    padding: 6px 12px;
-}
-
-.summary-table {
-    width: 100%;
-    border-collapse: collapse;
-}
-.summary-table th, .summary-table td {
-    padding: 15px;
-    text-align: left;
-    border-bottom: 1px solid #e5e7eb;
-}
-.summary-table th {
-    background-color: #f8fafc;
-    font-weight: 600;
-    color: #374151;
-}
-.summary-table tr:last-child td {
-    border-bottom: none;
-}
-.summary-table .badge {
-    padding: 6px 12px;
-    border-radius: 20px;
-    font-size: 12px;
-}
-
+/* Mini Card */
 .mini-card {
     background: #fff;
     border-radius: 12px;
-    padding: 20px;
-    box-shadow: 0 3px 10px rgba(0,0,0,0.08);
+    padding: 18px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
     margin-bottom: 15px;
     border-left: 4px solid #3b82f6;
 }
@@ -468,29 +489,17 @@ body {
     font-size: 14px; 
 }
 
+/* Progress */
 .progress {
     height: 8px;
     margin-top: 8px;
+    border-radius: 4px;
 }
 
-footer {
-    margin-left: 250px;
-    text-align: center;
-    padding: 20px 0;
-    color: #6b7280;
-    font-size: 14px;
-    border-top: 1px solid #e5e7eb;
-}
-
-.chart-container {
-    position: relative;
-    height: 320px;
-    width: 100%;
-}
-
+/* Quick Stats */
 .quick-stats {
     display: grid;
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: repeat(2, 1fr);
     gap: 15px;
     margin-top: 20px;
 }
@@ -510,6 +519,7 @@ footer {
     color: #6b7280;
 }
 
+/* Status Badge */
 .status-badge {
     padding: 4px 12px;
     border-radius: 20px;
@@ -519,13 +529,33 @@ footer {
 .status-selesai { background: #d1fae5; color: #065f46; }
 .status-pending { background: #fef3c7; color: #92400e; }
 
+/* Chart Container */
+.chart-container {
+    position: relative;
+    height: 250px;
+    width: 100%;
+}
+
 .chart-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 20px;
-    height: 300px;
+    height: 280px;
 }
 
+/* Progress Container */
+.progress-container {
+    margin-bottom: 20px;
+}
+.progress-label {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 5px;
+    font-size: 14px;
+    color: #6b7280;
+}
+
+/* Mobile Responsive - SAMA PERSIS */
 @media (max-width: 768px) {
     .sidebar {
         transform: translateX(-100%);
@@ -540,21 +570,34 @@ footer {
     .mobile-toggle {
         display: block !important;
     }
+    .stats-container {
+        grid-template-columns: 1fr;
+    }
     .welcome-box {
         flex-direction: column;
-        gap: 15px;
         text-align: center;
+        gap: 15px;
     }
     .chart-grid {
         grid-template-columns: 1fr;
         height: auto;
     }
 }
+
+/* Footer - SAMA PERSIS */
+footer {
+    margin-left: 250px;
+    text-align: center;
+    padding: 20px 0;
+    color: #6b7280;
+    font-size: 14px;
+    border-top: 1px solid #e5e7eb;
+}
 </style>
 </head>
 <body>
 
-<!-- Sidebar -->
+<!-- Sidebar - MENU KASIR -->
 <div class="sidebar" id="sidebar">
     <div class="logo">
         <img src="../assets/img/Abyan (10) Kasir Computer.jpg" alt="Logo">
@@ -576,9 +619,9 @@ footer {
         <span class="nav-text">Riwayat Transaksi</span>
     </a>
     
-    <a href="retur.php">
-        <i class="fa fa-box"></i>
-        <span class="nav-text">Retur Barang</span>
+    <a href="laporan.php">
+        <i class="fa fa-file-alt"></i>
+        <span class="nav-text">Laporan Penjualan</span>
     </a>
     
     <div style="margin-top: auto; padding: 20px;">
@@ -589,7 +632,7 @@ footer {
     </div>
 </div>
 
-<!-- Topbar -->
+<!-- Topbar - SAMA PERSIS -->
 <div class="topbar" id="topbar">
     <div class="d-flex align-items-center">
         <button class="btn btn-primary me-3 mobile-toggle" style="display: none; border-radius: 8px;" onclick="toggleMobileSidebar()">
@@ -624,6 +667,7 @@ footer {
 
 <!-- Content -->
 <div class="content" id="content">
+    <!-- Welcome Box -->
     <div class="welcome-box">
         <h2>Selamat Datang, <?= htmlspecialchars($_SESSION['username']); ?>! 🎉</h2>
         <div class="date-info">
@@ -631,39 +675,27 @@ footer {
         </div>
     </div>
 
-    <!-- Kartu Statistik Utama -->
-    <div class="row g-4 mb-4">
-        <div class="col-md-3">
-            <div class="card">
-                <i class="fa fa-box text-primary"></i>
-                <h5>Total Produk</h5>
-                <h3 class="counter" data-target="<?= $totalProduk; ?>">0</h3>
-                <div class="card-subtitle">Tersedia di sistem</div>
-            </div>
+    <!-- Statistik Utama -->
+    <div class="stats-container">
+        <div class="stat-card">
+            <i class="fa fa-box text-primary"></i>
+            <div class="stat-number"><?= $totalProduk; ?></div>
+            <div class="stat-label">Total Produk</div>
         </div>
-        <div class="col-md-3">
-            <div class="card">
-                <i class="fa fa-shopping-cart text-success"></i>
-                <h5>Transaksi Hari Ini</h5>
-                <h3 class="counter" data-target="<?= $transaksiHariIni; ?>">0</h3>
-                <div class="card-subtitle">Oleh Anda</div>
-            </div>
+        <div class="stat-card">
+            <i class="fa fa-shopping-cart text-success"></i>
+            <div class="stat-number"><?= $transaksiHariIni; ?></div>
+            <div class="stat-label">Transaksi Hari Ini</div>
         </div>
-        <div class="col-md-3">
-            <div class="card">
-                <i class="fa fa-money-bill-wave text-warning"></i>
-                <h5>Pendapatan Hari Ini</h5>
-                <h3>Rp <?= number_format($pendapatanHariIni, 0, ',', '.'); ?></h3>
-                <div class="card-subtitle">Dari transaksi Anda</div>
-            </div>
+        <div class="stat-card">
+            <i class="fa fa-money-bill-wave text-warning"></i>
+            <div class="stat-number">Rp <?= number_format($pendapatanHariIni, 0, ',', '.'); ?></div>
+            <div class="stat-label">Pendapatan Hari Ini</div>
         </div>
-        <div class="col-md-3">
-            <div class="card">
-                <i class="fa fa-chart-line text-info"></i>
-                <h5>Rata-rata Transaksi</h5>
-                <h3>Rp <?= number_format($avgTransaction, 0, ',', '.'); ?></h3>
-                <div class="card-subtitle">Per transaksi</div>
-            </div>
+        <div class="stat-card">
+            <i class="fa fa-chart-line text-info"></i>
+            <div class="stat-number">Rp <?= number_format($avgTransaction, 0, ',', '.'); ?></div>
+            <div class="stat-label">Rata-rata Transaksi</div>
         </div>
     </div>
 
@@ -769,24 +801,19 @@ footer {
                     <span class="badge bg-danger">Bulan Ini</span>
                 </h4>
                 <?php if(count($produkTerlaris) > 0): ?>
-                    <table class="summary-table">
+                    <table class="table table-hover">
                         <thead>
                             <tr>
                                 <th>Produk</th>
-                                <th>Terjual</th>
+                                <th class="text-end">Terjual</th>
                             </tr>
                         </thead>
                         <tbody>
                             <?php foreach($produkTerlaris as $produk): ?>
                                 <tr>
                                     <td><?= htmlspecialchars($produk['nama_produk']); ?></td>
-                                    <td>
-                                        <div class="d-flex justify-content-between align-items-center">
-                                            <span><?= $produk['total_terjual']; ?></span>
-                                            <div class="progress" style="width: 60px;">
-                                                <div class="progress-bar bg-success" style="width: <?= min(100, ($produk['total_terjual'] / max(1, $produkTerlaris[0]['total_terjual'])) * 100); ?>%"></div>
-                                            </div>
-                                        </div>
+                                    <td class="text-end">
+                                        <span class="badge bg-success"><?= $produk['total_terjual']; ?> unit</span>
                                     </td>
                                 </tr>
                             <?php endforeach; ?>
@@ -806,18 +833,20 @@ footer {
                     <span class="badge bg-warning">Pelanggan Anda</span>
                 </h4>
                 <?php if(count($kategoriPopuler) > 0): ?>
-                    <table class="summary-table">
+                    <table class="table table-hover">
                         <thead>
                             <tr>
                                 <th>Kategori</th>
-                                <th>Transaksi</th>
+                                <th class="text-end">Transaksi</th>
                             </tr>
                         </thead>
                         <tbody>
                             <?php foreach($kategoriPopuler as $kategori): ?>
                                 <tr>
                                     <td><?= htmlspecialchars($kategori['nama_kategori']); ?></td>
-                                    <td><?= $kategori['jumlah_transaksi']; ?>x</td>
+                                    <td class="text-end">
+                                        <span class="badge bg-primary"><?= $kategori['jumlah_transaksi']; ?>x</span>
+                                    </td>
                                 </tr>
                             <?php endforeach; ?>
                         </tbody>
@@ -836,18 +865,20 @@ footer {
                     <span class="badge bg-info">Waktu Transaksi</span>
                 </h4>
                 <?php if(count($jamSibuk) > 0): ?>
-                    <table class="summary-table">
+                    <table class="table table-hover">
                         <thead>
                             <tr>
                                 <th>Jam</th>
-                                <th>Transaksi</th>
+                                <th class="text-end">Transaksi</th>
                             </tr>
                         </thead>
                         <tbody>
                             <?php foreach($jamSibuk as $jam): ?>
                                 <tr>
                                     <td><?= $jam['jam']; ?>:00</td>
-                                    <td><?= $jam['jumlah_transaksi']; ?> transaksi</td>
+                                    <td class="text-end">
+                                        <span class="badge bg-info"><?= $jam['jumlah_transaksi']; ?> transaksi</span>
+                                    </td>
                                 </tr>
                             <?php endforeach; ?>
                         </tbody>
@@ -864,44 +895,46 @@ footer {
         <div class="col-12">
             <div class="summary-card">
                 <h4>
-                    <span><i class="fa fa-clock me-2 text-primary"></i>Transaksi Terbaru Anda</span>
+                    <span><i class="fa fa-history me-2 text-primary"></i>Transaksi Terbaru Anda</span>
                     <span class="badge bg-primary">6 Terbaru</span>
                 </h4>
                 <?php if(count($transaksiTerbaru) > 0): ?>
-                    <table class="summary-table">
-                        <thead>
-                            <tr>
-                                <th>Kode Transaksi</th>
-                                <th>Tanggal & Waktu</th>
-                                <th>Jumlah Item</th>
-                                <th>Total</th>
-                                <th>Status</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <?php foreach($transaksiTerbaru as $transaksi): ?>
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
                                 <tr>
-                                    <td><?= $transaksi['kode_transaksi']; ?></td>
-                                    <td>
-                                        <div>
-                                            <?= date('d/m/Y', strtotime($transaksi['tanggal'])); ?>
-                                        </div>
-                                        <small class="text-muted">
-                                            <i class="fa fa-clock me-1"></i>
-                                            <?= date('H:i', strtotime($transaksi['waktu_jam'])); ?>
-                                        </small>
-                                    </td>
-                                    <td><?= $transaksi['jumlah_item']; ?> item</td>
-                                    <td>Rp <?= number_format($transaksi['total'], 0, ',', '.'); ?></td>
-                                    <td>
-                                        <span class="status-badge <?= $transaksi['status'] == 'selesai' ? 'status-selesai' : 'status-pending'; ?>">
-                                            <?= ucfirst($transaksi['status']); ?>
-                                        </span>
-                                    </td>
+                                    <th>Kode Transaksi</th>
+                                    <th>Tanggal & Waktu</th>
+                                    <th class="text-center">Jumlah Item</th>
+                                    <th class="text-end">Total</th>
+                                    <th class="text-center">Status</th>
                                 </tr>
-                            <?php endforeach; ?>
-                        </tbody>
-                    </table>
+                            </thead>
+                            <tbody>
+                                <?php foreach($transaksiTerbaru as $transaksi): ?>
+                                    <tr>
+                                        <td><?= $transaksi['kode_transaksi']; ?></td>
+                                        <td>
+                                            <div><?= date('d/m/Y', strtotime($transaksi['tanggal'])); ?></div>
+                                            <small class="text-muted">
+                                                <i class="fa fa-clock me-1"></i>
+                                                <?= date('H:i', strtotime($transaksi['waktu_jam'])); ?>
+                                            </small>
+                                        </td>
+                                        <td class="text-center"><?= $transaksi['jumlah_item']; ?> item</td>
+                                        <td class="text-end">
+                                            <strong class="text-success">Rp <?= number_format($transaksi['total'], 0, ',', '.'); ?></strong>
+                                        </td>
+                                        <td class="text-center">
+                                            <span class="badge <?= $transaksi['status'] == 'selesai' ? 'bg-success' : 'bg-warning'; ?>">
+                                                <?= ucfirst($transaksi['status']); ?>
+                                            </span>
+                                        </td>
+                                    </tr>
+                                <?php endforeach; ?>
+                            </tbody>
+                        </table>
+                    </div>
                 <?php else: ?>
                     <p class="text-center text-muted">Belum ada transaksi</p>
                 <?php endif; ?>
@@ -910,16 +943,18 @@ footer {
     </div>
 </div>
 
-<footer id="footer">
-    &copy; <?= date('Y'); ?> Kasir Computer — Kasir Panel
+<footer>
+    &copy; <?= date('Y'); ?> Kasir Computer — Developed by Abyan
 </footer>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 <script>
+// Mobile sidebar toggle
 function toggleMobileSidebar() {
     document.getElementById('sidebar').classList.toggle('mobile-open');
 }
 
+// Counter animation
 document.addEventListener('DOMContentLoaded', function() {
     const counters = document.querySelectorAll('.counter');
     counters.forEach(counter => {
@@ -950,6 +985,7 @@ document.addEventListener('DOMContentLoaded', function() {
         observer.observe(counter);
     });
 
+    // Sales Chart
     const salesCtx = document.getElementById('salesChart');
     if (salesCtx) {
         new Chart(salesCtx.getContext('2d'), {
@@ -996,6 +1032,7 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
+    // Category Chart
     const categoryCtx = document.getElementById('categoryChart');
     if (categoryCtx) {
         new Chart(categoryCtx.getContext('2d'), {
@@ -1033,11 +1070,13 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
+    // Mobile detection
     if (window.innerWidth <= 768) {
         document.querySelector('.mobile-toggle').style.display = 'block';
     }
 });
 
+// Responsive handling
 window.addEventListener('resize', function() {
     if (window.innerWidth <= 768) {
         document.querySelector('.mobile-toggle').style.display = 'block';
@@ -1047,6 +1086,5 @@ window.addEventListener('resize', function() {
     }
 });
 </script>
-
 </body>
 </html>

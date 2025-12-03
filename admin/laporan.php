@@ -96,7 +96,7 @@ while($row = mysqli_fetch_assoc($kasir_query)) {
     $performa_kasir[] = $row;
 }
 
-// Kategori terlaris - SESUAIKAN DENGAN STRUKTUR DATABASE
+// Kategori terlaris
 $kategori_terlaris = [];
 $kategori_query = mysqli_query($conn, "
     SELECT 
@@ -243,6 +243,7 @@ if(isset($_GET['detail_id'])){
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <style>
+/* === SEMUA STYLE SAMA PERSIS DENGAN FILE users.php === */
 body {
     font-family: 'Poppins', sans-serif;
     background: #f0f2f5;
@@ -514,7 +515,7 @@ body {
     margin-bottom: 15px;
 }
 
-/* Mobile Responsive */
+/* Mobile Responsive - SAMA PERSIS */
 @media (max-width: 768px) {
     .sidebar {
         transform: translateX(-100%);
@@ -538,6 +539,7 @@ body {
     }
 }
 
+/* Footer - SAMA PERSIS */
 footer {
     margin-left: 250px;
     text-align: center;
@@ -550,7 +552,7 @@ footer {
 </head>
 <body>
 
-<!-- Sidebar -->
+<!-- Sidebar - SAMA PERSIS -->
 <div class="sidebar" id="sidebar">
     <div class="logo">
         <img src="../assets/img/Abyan (10) Kasir Computer.jpg" alt="Logo">
@@ -581,11 +583,6 @@ footer {
         <i class="fa fa-file-alt"></i>
         <span class="nav-text">Laporan Penjualan</span>
     </a>
-
-    <a href="retur.php">
-        <i class="fa fa-box"></i>
-        <span class="nav-text">Retur Barang</span>
-    </a>
     
     <a href="settings.php">
         <i class="fa fa-cog"></i>
@@ -600,7 +597,7 @@ footer {
     </div>
 </div>
 
-<!-- Topbar -->
+<!-- Topbar - SAMA PERSIS -->
 <div class="topbar" id="topbar">
     <div class="d-flex align-items-center">
         <button class="btn btn-primary me-3 mobile-toggle" style="display: none; border-radius: 8px;" onclick="toggleMobileSidebar()">
@@ -801,131 +798,139 @@ footer {
             </div>
         </div>
     </div>
-<!-- Tabel Transaksi -->
-<div class="table-container">
-    <table class="table table-hover align-middle" id="laporanTable">
-        <thead>
-            <tr>
-                <th width="120">Kode Transaksi</th>
-                <th width="140">Tanggal & Waktu</th>
-                <th width="100">Kasir</th>
-                <th width="100">Jumlah Item</th>
-                <th width="140">Total</th>
-                <th width="100">Status</th>
-                <th width="80" class="text-center">Aksi</th>
-            </tr>
-        </thead>
-        <tbody>
-        <?php 
-        $transaksi_data = [];
-        
-        // Reset pointer query untuk loop
-        mysqli_data_seek($transaksi_query, 0);
-        
-        while($t = mysqli_fetch_assoc($transaksi_query)): 
-            $transaksi_data[] = $t;
-            
-            // Hitung jumlah item
-            $item_count_query = mysqli_query($conn, 
-                "SELECT COUNT(*) as count FROM detail_transaksi WHERE transaksi_id = {$t['id']}"
-            );
-            $item_count = $item_count_query ? mysqli_fetch_assoc($item_count_query)['count'] : 0;
-            
-            $status_class = $t['status'] === 'selesai' ? 'bg-success' : 'bg-danger';
-            $status_text = $t['status'] === 'selesai' ? 'Selesai' : 'Batal';
-        ?>
-            <tr>
-                <td>
-                    <strong><?= $t['kode_transaksi']; ?></strong>
-                </td>
-                <td>
-                    <div>
-                        <div class="fw-semibold"><?= date('d M Y', strtotime($t['tanggal'])); ?></div>
-                        <small class="text-muted"><?= date('H:i', strtotime($t['waktu'])); ?></small>
-                    </div>
-                </td>
-                <td>
-                    <div class="d-flex align-items-center">
-                        <div class="user-avatar bg-info text-white rounded-circle d-flex align-items-center justify-content-center me-2" 
-                             style="width: 28px; height: 28px; font-size: 12px;">
-                            <?= strtoupper(substr($t['kasir'] ?? 'A', 0, 1)) ?>
-                        </div>
-                        <div class="text-truncate" style="max-width: 60px;" title="<?= htmlspecialchars($t['kasir'] ?? 'Admin') ?>">
-                            <?= htmlspecialchars($t['kasir'] ?? 'Admin'); ?>
-                        </div>
-                    </div>
-                </td>
-                <td>
-                    <span class="badge bg-secondary"><?= $item_count ?> item</span>
-                </td>
-                <td>
-                    <strong class="text-success">Rp <?= number_format($t['total'], 0, ',', '.'); ?></strong>
-                </td>
-                <td>
-                    <span class="badge <?= $status_class ?>">
-                        <?= $status_text ?>
-                    </span>
-                </td>
-                <td class="text-center">
-                    <button class="btn btn-outline-primary btn-sm" 
-                            onclick="showDetail(<?= $t['id'] ?>)"
-                            title="Lihat Detail">
-                        <i class="fa fa-eye"></i>
-                    </button>
-                </td>
-            </tr>
-        <?php endwhile; ?>
-        
-        <?php if(empty($transaksi_data)): ?>
-            <tr>
-                <td colspan="7" class="text-center py-4">
-                    <i class="fa fa-receipt fa-3x text-muted mb-3"></i>
-                    <h5 class="text-muted">Tidak ada transaksi</h5>
-                    <p class="text-muted">Tidak ada transaksi pada periode yang dipilih</p>
-                </td>
-            </tr>
-        <?php endif; ?>
-        </tbody>
-    </table>
-</div>
 
-<!-- Modal Detail Transaksi -->
-<div class="modal fade" id="detailModal" tabindex="-1">
-  <div class="modal-dialog modal-lg">
-    <div class="modal-content">
-      <div class="modal-header bg-primary text-white">
-        <h5 class="modal-title">Detail Transaksi #<span id="modalTransactionId"></span></h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-      </div>
-      <div class="modal-body" id="detailModalContent">
-        <!-- Content akan diisi oleh JavaScript -->
+    <!-- Tabel Transaksi -->
+    <div class="table-container">
+        <table class="table table-hover align-middle" id="laporanTable">
+            <thead>
+                <tr>
+                    <th width="120">Kode Transaksi</th>
+                    <th width="140">Tanggal & Waktu</th>
+                    <th width="100">Kasir</th>
+                    <th width="100">Jumlah Item</th>
+                    <th width="140">Total</th>
+                    <th width="100">Status</th>
+                    <th width="80" class="text-center">Aksi</th>
+                </tr>
+            </thead>
+            <tbody>
+            <?php 
+            $transaksi_data = [];
+            
+            // Reset pointer query untuk loop
+            mysqli_data_seek($transaksi_query, 0);
+            
+            while($t = mysqli_fetch_assoc($transaksi_query)): 
+                $transaksi_data[] = $t;
+                
+                // Hitung jumlah item
+                $item_count_query = mysqli_query($conn, 
+                    "SELECT COUNT(*) as count FROM detail_transaksi WHERE transaksi_id = {$t['id']}"
+                );
+                $item_count = $item_count_query ? mysqli_fetch_assoc($item_count_query)['count'] : 0;
+                
+                $status_class = $t['status'] === 'selesai' ? 'bg-success' : 'bg-danger';
+                $status_text = $t['status'] === 'selesai' ? 'Selesai' : 'Batal';
+            ?>
+                <tr>
+                    <td>
+                        <strong><?= $t['kode_transaksi']; ?></strong>
+                    </td>
+                    <td>
+                        <div>
+                            <div class="fw-semibold"><?= date('d M Y', strtotime($t['tanggal'])); ?></div>
+                            <small class="text-muted"><?= date('H:i', strtotime($t['waktu'])); ?></small>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="d-flex align-items-center">
+                            <div class="user-avatar bg-info text-white rounded-circle d-flex align-items-center justify-content-center me-2" 
+                                 style="width: 28px; height: 28px; font-size: 12px;">
+                                <?= strtoupper(substr($t['kasir'] ?? 'A', 0, 1)) ?>
+                            </div>
+                            <div class="text-truncate" style="max-width: 60px;" title="<?= htmlspecialchars($t['kasir'] ?? 'Admin') ?>">
+                                <?= htmlspecialchars($t['kasir'] ?? 'Admin'); ?>
+                            </div>
+                        </div>
+                    </td>
+                    <td>
+                        <span class="badge bg-secondary"><?= $item_count ?> item</span>
+                    </td>
+                    <td>
+                        <strong class="text-success">Rp <?= number_format($t['total'], 0, ',', '.'); ?></strong>
+                    </td>
+                    <td>
+                        <span class="badge <?= $status_class ?>">
+                            <?= $status_text ?>
+                        </span>
+                    </td>
+                    <td class="text-center">
+                        <button class="btn btn-outline-primary btn-sm" 
+                                onclick="showDetail(<?= $t['id'] ?>)"
+                                title="Lihat Detail">
+                            <i class="fa fa-eye"></i>
+                        </button>
+                    </td>
+                </tr>
+            <?php endwhile; ?>
+            
+            <?php if(empty($transaksi_data)): ?>
+                <tr>
+                    <td colspan="7" class="text-center py-4">
+                        <i class="fa fa-receipt fa-3x text-muted mb-3"></i>
+                        <h5 class="text-muted">Tidak ada transaksi</h5>
+                        <p class="text-muted">Tidak ada transaksi pada periode yang dipilih</p>
+                    </td>
+                </tr>
+            <?php endif; ?>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Modal Detail Transaksi -->
+    <div class="modal fade" id="detailModal" tabindex="-1">
+      <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+          <div class="modal-header bg-primary text-white">
+            <h5 class="modal-title">Detail Transaksi #<span id="modalTransactionId"></span></h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+          </div>
+          <div class="modal-body" id="detailModalContent">
+            <!-- Content akan diisi oleh JavaScript -->
+          </div>
+        </div>
       </div>
     </div>
-  </div>
 </div>
 
-<footer id="footer">
+<!-- Footer - SAMA PERSIS TANPA DUPLIKASI -->
+<footer style="margin-left: 250px; text-align: center; padding: 20px 0; color: #6b7280; font-size: 14px; border-top: 1px solid #e5e7eb; font-family: 'Poppins', sans-serif;">
     &copy; <?= date('Y'); ?> Kasir Computer — Developed by Abyan
 </footer>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 <script>
-// 🔹 Mobile sidebar toggle
+// === Mobile sidebar toggle - SAMA PERSIS ===
 function toggleMobileSidebar() {
     document.getElementById('sidebar').classList.toggle('mobile-open');
 }
 
-// 🔹 Fitur search real-time
-document.getElementById("searchInput").addEventListener("keyup", function() {
+// === Search Functionality - SAMA PERSIS ===
+document.getElementById('searchInput').addEventListener('keyup', function() {
     const filter = this.value.toLowerCase();
-    const rows = document.querySelectorAll("#laporanTable tbody tr");
-    rows.forEach(r => {
-        const text = r.textContent.toLowerCase();
-        r.style.display = text.includes(filter) ? "" : "none";
+    const rows = document.querySelectorAll('#laporanTable tbody tr');
+    
+    rows.forEach(row => {
+        const text = row.textContent.toLowerCase();
+        if (text.includes(filter)) {
+            row.style.display = '';
+        } else {
+            row.style.display = 'none';
+        }
     });
 });
 
-// 🔹 Chart.js - Grafik Trend Penjualan
+// === Chart.js - Grafik Trend Penjualan ===
 const chartCtx = document.getElementById('salesTrendChart').getContext('2d');
 new Chart(chartCtx, {
     type: 'line',
@@ -999,7 +1004,7 @@ new Chart(chartCtx, {
     }
 });
 
-// 🔹 Show Detail Transaksi
+// === Show Detail Transaksi ===
 function showDetail(transaksiId) {
     document.getElementById('modalTransactionId').textContent = transaksiId;
     
@@ -1035,7 +1040,7 @@ function showDetail(transaksiId) {
         });
 }
 
-// 🔹 Export to PDF
+// === Export to PDF ===
 function exportToPDF() {
     const dates = '<?= $start ?>_to_<?= $end ?>';
     const filename = `Laporan_Penjualan_${dates}.pdf`;
@@ -1068,14 +1073,14 @@ function exportToPDF() {
     });
 }
 
-// 🔹 Mobile detection
+// === Mobile detection - SAMA PERSIS ===
 document.addEventListener('DOMContentLoaded', function() {
     if (window.innerWidth <= 768) {
         document.querySelector('.mobile-toggle').style.display = 'block';
     }
 });
 
-// 🔹 Responsive handling
+// === Responsive handling - SAMA PERSIS ===
 window.addEventListener('resize', function() {
     if (window.innerWidth <= 768) {
         document.querySelector('.mobile-toggle').style.display = 'block';

@@ -88,7 +88,6 @@ $db_size_query = mysqli_query($conn, "
 $db_size = mysqli_fetch_assoc($db_size_query)['size'];
 $db_size_formatted = $db_size ? round($db_size / 1024 / 1024, 2) . ' MB' : 'Unknown';
 ?>
-
 <!DOCTYPE html>
 <html lang="id">
 <head>
@@ -106,7 +105,7 @@ body {
     overflow-x: hidden;
 }
 
-/* Sidebar Styles - Fixed tanpa collapse */
+/* Sidebar Styles - Fixed tanpa collapse - SAMA PERSIS */
 .sidebar { 
     width: 250px; 
     height: 100vh; 
@@ -161,7 +160,7 @@ body {
     font-size: 1.1rem;
 }
 
-/* Topbar Styles */
+/* Topbar Styles - SAMA PERSIS */
 .topbar {
     margin-left: 250px;
     height: 70px;
@@ -196,45 +195,19 @@ body {
     color: white;
 }
 
-/* Content Styles - FIX JARAK */
+/* Content Styles - SAMA PERSIS DENGAN YANG LAIN */
 .content {
     margin-left: 250px;
-    padding: 25px;
-    min-height: calc(100vh - 100px);
+    padding: 30px;
+    min-height: 100vh;
 }
 
-/* Custom Styles untuk Settings */
+/* Custom Styles untuk Settings - DISESUAIKAN */
 .card {
     border: none;
     border-radius: 15px;
-    box-shadow: 0 5px 15px rgba(0,0,0,0.08);
-    margin-bottom: 20px;
-}
-
-.card-header {
-    background: #fff;
-    border-bottom: 2px solid #e5e7eb;
-    padding: 18px 25px;
-    border-radius: 15px 15px 0 0 !important;
-}
-
-.card-header h4 {
-    margin: 0;
-    font-weight: 700;
-    color: #1e293b;
-    display: flex;
-    align-items: center;
-}
-
-.card-header h4 i {
-    margin-right: 10px;
-    color: #3b82f6;
-}
-
-.form-label {
-    font-weight: 600;
-    color: #374151;
-    margin-bottom: 8px;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+    margin-bottom: 25px;
 }
 
 .form-control, .form-select {
@@ -249,20 +222,6 @@ body {
     box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
 }
 
-.btn-primary {
-    background: linear-gradient(135deg, #3b82f6, #1d4ed8);
-    border: none;
-    border-radius: 10px;
-    padding: 12px 30px;
-    font-weight: 600;
-    transition: all 0.3s;
-}
-
-.btn-primary:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 5px 15px rgba(59, 130, 246, 0.4);
-}
-
 .alert {
     border: none;
     border-radius: 10px;
@@ -271,26 +230,27 @@ body {
 }
 
 .setting-group {
-    background: #f8fafc;
-    border-radius: 10px;
-    padding: 18px;
-    margin-bottom: 15px;
-    border-left: 4px solid #3b82f6;
+    background: #fff;
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    margin-bottom: 20px;
 }
 
 .setting-group h5 {
+    font-weight: 600;
+    margin-bottom: 20px;
     color: #1e293b;
-    margin-bottom: 18px;
+    border-bottom: 2px solid #e5e7eb;
     padding-bottom: 10px;
-    border-bottom: 1px solid #e5e7eb;
 }
 
 .system-info-card {
     background: #fff;
     border-radius: 12px;
-    padding: 18px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-    margin-bottom: 15px;
+    padding: 20px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    margin-bottom: 20px;
     height: 100%;
 }
 
@@ -298,7 +258,7 @@ body {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 8px 0;
+    padding: 10px 0;
     border-bottom: 1px solid #e5e7eb;
 }
 
@@ -319,13 +279,14 @@ body {
     border-left: 4px solid #ef4444;
 }
 
+/* Tab Content - SAMA DENGAN PRODUK.PHP */
 .tab-content {
     background: #fff;
     border-radius: 12px;
     padding: 20px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-    margin-top: 15px;
-    margin-bottom: 15px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    margin-top: 20px;
+    margin-bottom: 20px;
 }
 
 .nav-tabs .nav-link.active {
@@ -334,21 +295,39 @@ body {
     border-color: #1e293b;
 }
 
-/* Footer Styles - FIX POSISI */
-footer {
-    margin-left: 250px;
-    text-align: center;
-    padding: 12px 0;
-    color: #6b7280;
-    font-size: 14px;
-    border-top: 1px solid #e5e7eb;
+/* Stats Container - SAMA PERSIS DENGAN USERS.PHP */
+.stats-container {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 15px;
+    margin-bottom: 20px;
+}
+.stat-card {
     background: #fff;
-    position: relative;
-    bottom: 0;
-    width: calc(100% - 250px);
+    padding: 20px;
+    border-radius: 12px;
+    text-align: center;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    transition: transform 0.3s ease;
+}
+.stat-card:hover {
+    transform: translateY(-5px);
+}
+.stat-card i {
+    font-size: 24px;
+    margin-bottom: 10px;
+}
+.stat-number {
+    font-size: 24px;
+    font-weight: 700;
+    color: #1e293b;
+}
+.stat-label {
+    font-size: 14px;
+    color: #6b7280;
 }
 
-/* Mobile Responsive */
+/* Mobile Responsive - SAMA PERSIS */
 @media (max-width: 768px) {
     .sidebar {
         transform: translateX(-100%);
@@ -363,20 +342,25 @@ footer {
     .mobile-toggle {
         display: block !important;
     }
-    .content {
-        padding: 15px;
-        min-height: calc(100vh - 80px);
+    .stats-container {
+        grid-template-columns: 1fr;
     }
-    footer {
-        width: 100%;
-        padding: 10px 0;
-    }
+}
+
+/* Footer - SAMA PERSIS TANPA BACKGROUND PUTIH */
+footer {
+    margin-left: 250px;
+    text-align: center;
+    padding: 20px 0;
+    color: #6b7280;
+    font-size: 14px;
+    border-top: 1px solid #e5e7eb;
 }
 </style>
 </head>
 <body>
 
-<!-- Sidebar -->
+<!-- Sidebar - SAMA PERSIS -->
 <div class="sidebar" id="sidebar">
     <div class="logo">
         <img src="../assets/img/Abyan (10) Kasir Computer.jpg" alt="Logo">
@@ -407,11 +391,6 @@ footer {
         <i class="fa fa-file-alt"></i>
         <span class="nav-text">Laporan Penjualan</span>
     </a>
-
-    <a href="retur.php">
-        <i class="fa fa-box"></i>
-        <span class="nav-text">Retur Barang</span>
-    </a>
     
     <a href="settings.php" class="active">
         <i class="fa fa-cog"></i>
@@ -426,7 +405,7 @@ footer {
     </div>
 </div>
 
-<!-- Topbar -->
+<!-- Topbar - SAMA PERSIS -->
 <div class="topbar" id="topbar">
     <div class="d-flex align-items-center">
         <button class="btn btn-primary me-3 mobile-toggle" style="display: none; border-radius: 8px;" onclick="toggleMobileSidebar()">
@@ -461,6 +440,30 @@ footer {
 
 <!-- Content -->
 <div class="content" id="content">
+    <!-- Stats Container - SAMA PERSIS DENGAN USERS.PHP -->
+    <div class="stats-container">
+        <div class="stat-card">
+            <i class="fa fa-boxes text-primary"></i>
+            <div class="stat-number"><?= $total_produk ?></div>
+            <div class="stat-label">Total Produk</div>
+        </div>
+        <div class="stat-card">
+            <i class="fa fa-receipt text-success"></i>
+            <div class="stat-number"><?= $total_transaksi ?></div>
+            <div class="stat-label">Total Transaksi</div>
+        </div>
+        <div class="stat-card">
+            <i class="fa fa-users text-info"></i>
+            <div class="stat-number"><?= $total_users ?></div>
+            <div class="stat-label">Total User</div>
+        </div>
+        <div class="stat-card">
+            <i class="fa fa-database text-warning"></i>
+            <div class="stat-number"><?= $total_settings ?></div>
+            <div class="stat-label">Pengaturan</div>
+        </div>
+    </div>
+
     <?php if(isset($_SESSION['success'])): ?>
         <div class="alert alert-success alert-dismissible fade show">
             <i class="fa fa-check-circle me-2"></i>
@@ -634,7 +637,7 @@ footer {
                 </div>
                 
                 <div class="text-center mt-3">
-                    <button type="submit" name="update_settings" class="btn btn-primary btn-lg">
+                    <button type="submit" name="update_settings" class="btn btn-primary">
                         <i class="fa fa-save me-2"></i>Simpan Pengaturan
                     </button>
                 </div>
@@ -770,7 +773,7 @@ footer {
                 </div>
             </div>
 
-            <!-- Riwayat Backup - FIX: Show actual backup data -->
+            <!-- Riwayat Backup -->
             <div class="setting-group mt-3">
                 <h5><i class="fa fa-history me-2 text-info"></i>Riwayat Backup</h5>
                 <?php if($last_backup != 'Belum ada backup'): ?>
@@ -834,19 +837,19 @@ function confirmReset() {
     });
 }
 
-// Mobile sidebar toggle
+// Mobile sidebar toggle - SAMA PERSIS
 function toggleMobileSidebar() {
     document.getElementById('sidebar').classList.toggle('mobile-open');
 }
 
-// Mobile detection
+// Mobile detection - SAMA PERSIS
 document.addEventListener('DOMContentLoaded', function() {
     if (window.innerWidth <= 768) {
         document.querySelector('.mobile-toggle').style.display = 'block';
     }
 });
 
-// Responsive handling
+// Responsive handling - SAMA PERSIS
 window.addEventListener('resize', function() {
     if (window.innerWidth <= 768) {
         document.querySelector('.mobile-toggle').style.display = 'block';

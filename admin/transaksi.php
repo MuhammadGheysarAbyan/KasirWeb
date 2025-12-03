@@ -34,7 +34,7 @@ if(!empty($where_conditions)){
     $where_sql = "WHERE " . implode(' AND ', $where_conditions);
 }
 
-// Get transactions - FIX: tampilkan kode_transaksi
+// Get transactions
 $transaksi = [];
 $query = mysqli_query($conn, "
     SELECT t.*, u.username, COUNT(dt.id) as jumlah_item
@@ -79,7 +79,7 @@ body {
     overflow-x: hidden;
 }
 
-/* Sidebar Styles - Fixed tanpa collapse */
+/* Sidebar Styles - Fixed tanpa collapse - SAMA PERSIS */
 .sidebar { 
     width: 250px; 
     height: 100vh; 
@@ -134,7 +134,7 @@ body {
     font-size: 1.1rem;
 }
 
-/* Topbar Styles */
+/* Topbar Styles - SAMA PERSIS */
 .topbar {
     margin-left: 250px;
     height: 70px;
@@ -169,17 +169,17 @@ body {
     color: white;
 }
 
-/* Content Styles */
+/* Content Styles - SAMA PERSIS */
 .content {
     margin-left: 250px;
     padding: 30px;
     min-height: 100vh;
 }
 
-/* Custom Styles untuk Transaksi */
+/* Stats Container - SAMA DENGAN USERS.PHP (4 kolom) */
 .stats-container {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(4, 1fr);
     gap: 15px;
     margin-bottom: 20px;
 }
@@ -208,6 +208,16 @@ body {
     color: #6b7280;
 }
 
+/* Filter Card - SAMA DENGAN LAINNYA */
+.filter-card {
+    background: #fff;
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 20px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+/* Card Styling - SAMA PERSIS */
 .card {
     border: none;
     border-radius: 15px;
@@ -215,29 +225,7 @@ body {
     margin-bottom: 25px;
 }
 
-.card-header {
-    background: #fff;
-    border-bottom: 2px solid #e5e7eb;
-    padding: 20px 25px;
-    border-radius: 15px 15px 0 0 !important;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
-.card-header h4 {
-    margin: 0;
-    font-weight: 700;
-    color: #1e293b;
-    display: flex;
-    align-items: center;
-}
-
-.card-header h4 i {
-    margin-right: 10px;
-    color: #3b82f6;
-}
-
+/* Table Styling - SAMA PERSIS */
 .table {
     margin-bottom: 0;
 }
@@ -256,6 +244,7 @@ body {
     border-color: #e5e7eb;
 }
 
+/* Badge Styling - SAMA PERSIS */
 .badge {
     padding: 8px 12px;
     border-radius: 20px;
@@ -263,20 +252,14 @@ body {
     font-weight: 600;
 }
 
+/* Button Styling - SAMA PERSIS */
 .btn-sm {
     padding: 6px 12px;
     border-radius: 8px;
     font-size: 13px;
 }
 
-.filter-card {
-    background: #fff;
-    border-radius: 12px;
-    padding: 20px;
-    margin-bottom: 20px;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-}
-
+/* Form Controls - SAMA PERSIS */
 .form-control, .form-select {
     border: 2px solid #e5e7eb;
     border-radius: 10px;
@@ -289,16 +272,19 @@ body {
     box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
 }
 
+/* Status Badges */
 .status-completed { background-color: #10b981; color: white; }
 .status-pending { background-color: #f59e0b; color: white; }
 .status-cancelled { background-color: #ef4444; color: white; }
 
+/* Action Buttons - SAMA PERSIS */
 .action-buttons {
     display: flex;
     gap: 8px;
     justify-content: center;
 }
 
+/* Product Image - SAMA PERSIS */
 .product-image {
     width: 50px;
     height: 50px;
@@ -307,6 +293,7 @@ body {
     border: 2px solid #e5e7eb;
 }
 
+/* Detail Section - SAMA PERSIS */
 .detail-section {
     background: #f8f9fa;
     padding: 15px;
@@ -314,24 +301,7 @@ body {
     margin-bottom: 15px;
 }
 
-.navigation-buttons {
-    display: flex;
-    justify-content: space-between;
-    margin-top: 20px;
-}
-
-.pagination-container {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-top: 20px;
-    padding: 15px;
-    background: #fff;
-    border-radius: 12px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-}
-
-/* Mobile Responsive */
+/* Mobile Responsive - SAMA PERSIS */
 @media (max-width: 768px) {
     .sidebar {
         transform: translateX(-100%);
@@ -355,6 +325,7 @@ body {
     }
 }
 
+/* Footer - SAMA PERSIS */
 footer {
     margin-left: 250px;
     text-align: center;
@@ -367,7 +338,7 @@ footer {
 </head>
 <body>
 
-<!-- Sidebar -->
+<!-- Sidebar - SAMA PERSIS -->
 <div class="sidebar" id="sidebar">
     <div class="logo">
         <img src="../assets/img/Abyan (10) Kasir Computer.jpg" alt="Logo">
@@ -399,11 +370,6 @@ footer {
         <span class="nav-text">Laporan Penjualan</span>
     </a>
 
-    <a href="retur.php">
-        <i class="fa fa-box"></i>
-        <span class="nav-text">Retur Barang</span>
-    </a>
-
     <a href="settings.php">
         <i class="fa fa-cog"></i>
         <span class="nav-text">Pengaturan</span>
@@ -417,7 +383,7 @@ footer {
     </div>
 </div>
 
-<!-- Topbar -->
+<!-- Topbar - SAMA PERSIS -->
 <div class="topbar" id="topbar">
     <div class="d-flex align-items-center">
         <button class="btn btn-primary me-3 mobile-toggle" style="display: none; border-radius: 8px;" onclick="toggleMobileSidebar()">
@@ -452,7 +418,7 @@ footer {
 
 <!-- Content -->
 <div class="content" id="content">
-    <!-- Statistik Transaksi -->
+    <!-- Statistik Transaksi - 4 KOLOM SAMA DENGAN USERS.PHP -->
     <div class="stats-container">
         <div class="stat-card">
             <i class="fa fa-receipt text-primary"></i>
@@ -469,191 +435,197 @@ footer {
             <div class="stat-number">Rp <?= number_format($pendapatan_hari_ini, 0, ',', '.') ?></div>
             <div class="stat-label">Pendapatan Hari Ini</div>
         </div>
+        <div class="stat-card">
+            <i class="fa fa-users text-info"></i>
+            <div class="stat-number"><?= count($kasir_list) ?></div>
+            <div class="stat-label">Total Kasir</div>
+        </div>
     </div>
 
     <!-- Filter Section -->
-    <div class="card filter-card">
-        <div class="card-body">
-            <form method="GET" class="row g-3">
-                <div class="col-md-3">
-                    <label class="form-label">Tanggal</label>
-                    <input type="date" class="form-control" name="tanggal" value="<?= htmlspecialchars($filter_tanggal); ?>">
-                </div>
-                <div class="col-md-3">
-                    <label class="form-label">Status</label>
-                    <select class="form-select" name="status">
-                        <option value="all">Semua Status</option>
-                        <option value="completed" <?= $filter_status == 'completed' ? 'selected' : ''; ?>>Completed</option>
-                        <option value="pending" <?= $filter_status == 'pending' ? 'selected' : ''; ?>>Pending</option>
-                        <option value="cancelled" <?= $filter_status == 'cancelled' ? 'selected' : ''; ?>>Cancelled</option>
-                    </select>
-                </div>
-                <div class="col-md-3">
-                    <label class="form-label">Kasir</label>
-                    <select class="form-select" name="kasir">
-                        <option value="all">Semua Kasir</option>
-                        <?php foreach($kasir_list as $kasir): ?>
-                            <option value="<?= $kasir['id']; ?>" <?= $filter_kasir == $kasir['id'] ? 'selected' : ''; ?>>
-                                <?= htmlspecialchars($kasir['username']); ?>
-                            </option>
-                        <?php endforeach; ?>
-                    </select>
-                </div>
-                <div class="col-md-3 d-flex align-items-end">
-                    <button type="submit" class="btn btn-primary w-100">
-                        <i class="fa fa-filter me-2"></i>Filter
-                    </button>
-                    <?php if($filter_tanggal || $filter_status != 'all' || $filter_kasir != 'all'): ?>
-                    <a href="transaksi.php" class="btn btn-outline-secondary ms-2">
-                        <i class="fa fa-refresh"></i>
-                    </a>
-                    <?php endif; ?>
-                </div>
-            </form>
-        </div>
-    </div>
-
-<!-- Transactions Table -->
-<div class="card">
-    <div class="card-header">
-        <h4><i class="fa fa-exchange-alt"></i> Daftar Transaksi</h4>
-        <div class="text-muted">Total: <?= count($transaksi); ?> transaksi</div>
-    </div>
-    <div class="card-body">
-        <?php if(count($transaksi) > 0): ?>
-            <div class="table-responsive">
-                <table class="table table-hover">
-                    <thead>
-                        <tr>
-                            <th>Kode Transaksi</th>
-                            <th>Tanggal/Waktu</th>
-                            <th>Kasir</th>
-                            <th>Jumlah Item</th>
-                            <th>Total</th>
-                            <th>Status</th>
-                            <th width="150" class="text-center">Aksi</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <?php foreach($transaksi as $trx): ?>
-                            <tr>
-                                <td>
-                                    <strong class="text-primary"><?= htmlspecialchars($trx['kode_transaksi']); ?></strong>
-                                </td>
-                                <td>
-                                    <div><?= date('d/m/Y', strtotime($trx['tanggal'])); ?></div>
-                                    <small class="text-muted"><?= date('H:i:s', strtotime($trx['waktu'])); ?></small>
-                                </td>
-                                <td>
-                                    <div class="d-flex align-items-center">
-                                        <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center me-2" style="width: 32px; height: 32px; font-size: 14px;">
-                                            <?= strtoupper(substr($trx['username'], 0, 1)); ?>
-                                        </div>
-                                        <?= htmlspecialchars($trx['username']); ?>
-                                    </div>
-                                </td>
-                                <td>
-                                    <span class="badge bg-secondary"><?= $trx['jumlah_item']; ?> item</span>
-                                </td>
-                                <td>
-                                    <strong class="text-success">Rp <?= number_format($trx['total'], 0, ',', '.'); ?></strong>
-                                </td>
-                                <td>
-                                    <?php 
-                                    $status_class = '';
-                                    $status_icon = '';
-                                    switch($trx['status']){
-                                        case 'selesai': 
-                                            $status_class = 'bg-success';
-                                            $status_icon = 'fa-check-circle';
-                                            break;
-                                        case 'batal': 
-                                            $status_class = 'bg-danger';
-                                            $status_icon = 'fa-times-circle';
-                                            break;
-                                        default:
-                                            $status_class = 'bg-secondary';
-                                            $status_icon = 'fa-question-circle';
-                                    }
-                                    ?>
-                                    <span class="badge <?= $status_class; ?> text-white">
-                                        <i class="fa <?= $status_icon ?> me-1"></i>
-                                        <?= ucfirst($trx['status']); ?>
-                                    </span>
-                                </td>
-                                <td>
-                                    <div class="action-buttons">
-                                        <button class="btn btn-info btn-sm" 
-                                                data-bs-toggle="modal" 
-                                                data-bs-target="#detailModal"
-                                                onclick="showDetail(<?= $trx['id']; ?>)"
-                                                title="Detail Transaksi">
-                                            <i class="fa fa-eye"></i>
-                                        </button>
-                                        <button class="btn btn-warning btn-sm"
-                                                onclick="printStruk(<?= $trx['id']; ?>)"
-                                                title="Print Struk">
-                                            <i class="fa fa-print"></i>
-                                        </button>
-                                        <?php if($trx['status'] == 'selesai'): ?>
-                                        <button class="btn btn-danger btn-sm"
-                                                onclick="updateStatus(<?= $trx['id']; ?>, 'batal')"
-                                                title="Batalkan Transaksi">
-                                            <i class="fa fa-times"></i>
-                                        </button>
-                                        <?php elseif($trx['status'] == 'batal'): ?>
-                                        <button class="btn btn-success btn-sm"
-                                                onclick="updateStatus(<?= $trx['id']; ?>, 'selesai')"
-                                                title="Aktifkan Transaksi">
-                                            <i class="fa fa-check"></i>
-                                        </button>
-                                        <?php endif; ?>
-                                    </div>
-                                </td>
-                            </tr>
-                        <?php endforeach; ?>
-                    </tbody>
-                </table>
+    <div class="filter-card">
+        <form method="GET" class="row g-3">
+            <div class="col-md-3">
+                <label class="form-label">Tanggal</label>
+                <input type="date" class="form-control" name="tanggal" value="<?= htmlspecialchars($filter_tanggal); ?>">
             </div>
-        <?php else: ?>
-            <div class="text-center py-5">
-                <i class="fa fa-receipt fa-3x text-muted mb-3"></i>
-                <h5 class="text-muted">Tidak ada data transaksi</h5>
-                <p class="text-muted">
-                    <?php if($filter_tanggal || $filter_status != 'all' || $filter_kasir != 'all'): ?>
-                    Coba ubah filter pencarian atau 
-                    <?php endif; ?>
-                    <a href="transaksi.php" class="text-primary">lihat semua transaksi</a>
-                </p>
+            <div class="col-md-3">
+                <label class="form-label">Status</label>
+                <select class="form-select" name="status">
+                    <option value="all">Semua Status</option>
+                    <option value="selesai" <?= $filter_status == 'selesai' ? 'selected' : ''; ?>>Selesai</option>
+                    <option value="batal" <?= $filter_status == 'batal' ? 'selected' : ''; ?>>Batal</option>
+                </select>
             </div>
-        <?php endif; ?>
-    </div>
-</div>
-
-<!-- Detail Modal -->
-<div class="modal fade" id="detailModal" tabindex="-1">
-    <div class="modal-dialog modal-lg">
-        <div class="modal-content">
-            <div class="modal-header bg-info text-white">
-                <h5 class="modal-title">Detail Transaksi #<span id="modalTransaksiId"></span></h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            <div class="col-md-3">
+                <label class="form-label">Kasir</label>
+                <select class="form-select" name="kasir">
+                    <option value="all">Semua Kasir</option>
+                    <?php foreach($kasir_list as $kasir): ?>
+                        <option value="<?= $kasir['id']; ?>" <?= $filter_kasir == $kasir['id'] ? 'selected' : ''; ?>>
+                            <?= htmlspecialchars($kasir['username']); ?>
+                        </option>
+                    <?php endforeach; ?>
+                </select>
             </div>
-            <div class="modal-body">
-                <div id="detailContent">
-                    <!-- Detail will be loaded here via JavaScript -->
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
-                <button type="button" class="btn btn-primary" onclick="printStruk(currentDetailId)">
-                    <i class="fa fa-print me-2"></i>Print Struk
+            <div class="col-md-3 d-flex align-items-end">
+                <button type="submit" class="btn btn-primary w-100">
+                    <i class="fa fa-filter me-2"></i>Filter
                 </button>
+                <?php if($filter_tanggal || $filter_status != 'all' || $filter_kasir != 'all'): ?>
+                <a href="transaksi.php" class="btn btn-outline-secondary ms-2">
+                    <i class="fa fa-refresh"></i>
+                </a>
+                <?php endif; ?>
+            </div>
+        </form>
+    </div>
+
+    <!-- Transactions Table -->
+    <div class="card">
+        <div class="card-body">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h4 class="mb-0"><i class="fa fa-exchange-alt me-2 text-primary"></i>Daftar Transaksi</h4>
+                <span class="text-muted">Total: <strong><?= count($transaksi); ?></strong> transaksi</span>
+            </div>
+            
+            <?php if(count($transaksi) > 0): ?>
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Kode Transaksi</th>
+                                <th>Tanggal/Waktu</th>
+                                <th>Kasir</th>
+                                <th>Jumlah Item</th>
+                                <th>Total</th>
+                                <th>Status</th>
+                                <th width="150" class="text-center">Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <?php foreach($transaksi as $trx): ?>
+                                <tr>
+                                    <td>
+                                        <strong class="text-primary"><?= htmlspecialchars($trx['kode_transaksi']); ?></strong>
+                                    </td>
+                                    <td>
+                                        <div><?= date('d/m/Y', strtotime($trx['tanggal'])); ?></div>
+                                        <small class="text-muted"><?= date('H:i:s', strtotime($trx['waktu'])); ?></small>
+                                    </td>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            <div class="user-avatar bg-primary text-white rounded-circle d-flex align-items-center justify-content-center me-2" 
+                                                 style="width: 32px; height: 32px; font-size: 14px;">
+                                                <?= strtoupper(substr($trx['username'], 0, 1)); ?>
+                                            </div>
+                                            <?= htmlspecialchars($trx['username']); ?>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-secondary"><?= $trx['jumlah_item']; ?> item</span>
+                                    </td>
+                                    <td>
+                                        <strong class="text-success">Rp <?= number_format($trx['total'], 0, ',', '.'); ?></strong>
+                                    </td>
+                                    <td>
+                                        <?php 
+                                        $status_class = '';
+                                        $status_icon = '';
+                                        switch($trx['status']){
+                                            case 'selesai': 
+                                                $status_class = 'bg-success';
+                                                $status_icon = 'fa-check-circle';
+                                                break;
+                                            case 'batal': 
+                                                $status_class = 'bg-danger';
+                                                $status_icon = 'fa-times-circle';
+                                                break;
+                                            default:
+                                                $status_class = 'bg-secondary';
+                                                $status_icon = 'fa-question-circle';
+                                        }
+                                        ?>
+                                        <span class="badge <?= $status_class; ?> text-white">
+                                            <i class="fa <?= $status_icon ?> me-1"></i>
+                                            <?= ucfirst($trx['status']); ?>
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <div class="action-buttons">
+                                            <button class="btn btn-info btn-sm" 
+                                                    data-bs-toggle="modal" 
+                                                    data-bs-target="#detailModal"
+                                                    onclick="showDetail(<?= $trx['id']; ?>)"
+                                                    title="Detail Transaksi">
+                                                <i class="fa fa-eye"></i>
+                                            </button>
+                                            <button class="btn btn-warning btn-sm"
+                                                    onclick="printStruk(<?= $trx['id']; ?>)"
+                                                    title="Print Struk">
+                                                <i class="fa fa-print"></i>
+                                            </button>
+                                            <?php if($trx['status'] == 'selesai'): ?>
+                                            <button class="btn btn-danger btn-sm"
+                                                    onclick="updateStatus(<?= $trx['id']; ?>, 'batal')"
+                                                    title="Batalkan Transaksi">
+                                                <i class="fa fa-times"></i>
+                                            </button>
+                                            <?php elseif($trx['status'] == 'batal'): ?>
+                                            <button class="btn btn-success btn-sm"
+                                                    onclick="updateStatus(<?= $trx['id']; ?>, 'selesai')"
+                                                    title="Aktifkan Transaksi">
+                                                <i class="fa fa-check"></i>
+                                            </button>
+                                            <?php endif; ?>
+                                        </div>
+                                    </td>
+                                </tr>
+                            <?php endforeach; ?>
+                        </tbody>
+                    </table>
+                </div>
+            <?php else: ?>
+                <div class="text-center py-5">
+                    <i class="fa fa-receipt fa-3x text-muted mb-3"></i>
+                    <h5 class="text-muted">Tidak ada data transaksi</h5>
+                    <p class="text-muted">
+                        <?php if($filter_tanggal || $filter_status != 'all' || $filter_kasir != 'all'): ?>
+                        Coba ubah filter pencarian atau 
+                        <?php endif; ?>
+                        <a href="transaksi.php" class="text-primary">lihat semua transaksi</a>
+                    </p>
+                </div>
+            <?php endif; ?>
+        </div>
+    </div>
+
+    <!-- Detail Modal -->
+    <div class="modal fade" id="detailModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header bg-primary text-white">
+                    <h5 class="modal-title">Detail Transaksi</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div id="detailContent">
+                        <!-- Detail will be loaded here via JavaScript -->
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
+                    <button type="button" class="btn btn-primary" onclick="printStruk(currentDetailId)">
+                        <i class="fa fa-print me-2"></i>Print Struk
+                    </button>
+                </div>
             </div>
         </div>
     </div>
 </div>
 
-<footer style="text-align: center; padding: 20px 0; color: #6b7280; font-size: 14px; border-top: 1px solid #e5e7eb; font-family: 'Poppins', sans-serif; margin-left: 0;">
+<!-- Footer - SAMA PERSIS -->
+<footer>
     &copy; <?= date('Y'); ?> Kasir Computer — Developed by Abyan
 </footer>
 
@@ -665,19 +637,35 @@ let currentDetailId = 0;
 function showDetail(transaksiId) {
     currentDetailId = transaksiId;
     
-    // Load detail via AJAX
+    // Show loading
+    document.getElementById('detailContent').innerHTML = `
+        <div class="text-center py-4">
+            <div class="spinner-border text-primary" role="status">
+                <span class="visually-hidden">Loading...</span>
+            </div>
+            <p class="mt-2">Memuat detail transaksi...</p>
+        </div>
+    `;
+    
+    const modal = new bootstrap.Modal(document.getElementById('detailModal'));
+    modal.show();
+    
+    // Load detail via fetch
     fetch(`get_transaction_detail.php?id=${transaksiId}`)
         .then(response => response.text())
         .then(data => {
             document.getElementById('detailContent').innerHTML = data;
-            // Update modal title dengan kode transaksi
-            const kodeElement = document.querySelector('#detailContent code');
-            if(kodeElement) {
-                document.getElementById('modalTransaksiId').textContent = kodeElement.textContent;
-            }
         })
         .catch(error => {
-            document.getElementById('detailContent').innerHTML = '<div class="alert alert-danger">Error loading details: ' + error + '</div>';
+            document.getElementById('detailContent').innerHTML = `
+                <div class="text-center py-4">
+                    <i class="fa fa-exclamation-triangle fa-2x text-danger mb-3"></i>
+                    <p class="text-danger">Gagal memuat detail transaksi</p>
+                    <button class="btn btn-primary btn-sm" onclick="showDetail(${transaksiId})">
+                        <i class="fa fa-refresh"></i> Coba Lagi
+                    </button>
+                </div>
+            `;
         });
 }
 
@@ -697,7 +685,7 @@ function updateStatus(transaksiId, status) {
         showCancelButton: true,
         confirmButtonColor: status === 'selesai' ? '#10b981' : '#ef4444',
         cancelButtonColor: '#6c757d',
-        confirmButtonText: `Ya, ${statusText.toUpperCase()}!`,
+        confirmButtonText: `Ya, ${statusText}!`,
         cancelButtonText: 'Batal'
     }).then((result) => {
         if (result.isConfirmed) {
@@ -706,19 +694,19 @@ function updateStatus(transaksiId, status) {
     });
 }
 
-// Mobile sidebar toggle
+// === Mobile sidebar toggle - SAMA PERSIS ===
 function toggleMobileSidebar() {
     document.getElementById('sidebar').classList.toggle('mobile-open');
 }
 
-// Mobile detection
+// === Mobile detection - SAMA PERSIS ===
 document.addEventListener('DOMContentLoaded', function() {
     if (window.innerWidth <= 768) {
         document.querySelector('.mobile-toggle').style.display = 'block';
     }
 });
 
-// Responsive handling
+// === Responsive handling - SAMA PERSIS ===
 window.addEventListener('resize', function() {
     if (window.innerWidth <= 768) {
         document.querySelector('.mobile-toggle').style.display = 'block';
@@ -728,108 +716,5 @@ window.addEventListener('resize', function() {
     }
 });
 </script>
-
-<?php if(isset($_GET['detail_id'])): ?>
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-    // Display transaction details
-    const transaksi = <?= json_encode($transaksi_info) ?>;
-    const details = <?= json_encode($detail_transaksi) ?>;
-    
-    let detailHTML = `
-        <div class="row mb-4">
-            <div class="col-md-6">
-                <div class="detail-section">
-                    <h6><i class="fa fa-info-circle text-primary"></i> Informasi Transaksi</h6>
-                    <table class="table table-sm table-borderless">
-                        <tr><td width="120"><strong>ID Transaksi</strong></td><td>#${transaksi.id}</td></tr>
-                        <tr><td><strong>Tanggal</strong></td><td>${new Date(transaksi.tanggal + ' ' + transaksi.waktu).toLocaleString('id-ID')}</td></tr>
-                        <tr><td><strong>Kasir</strong></td><td>${transaksi.username}</td></tr>
-                        <tr><td><strong>Status</strong></td><td>
-                            ${getStatusBadge(transaksi.status)}
-                        </td></tr>
-                    </table>
-                </div>
-            </div>
-            <div class="col-md-6">
-                <div class="detail-section">
-                    <h6><i class="fa fa-money-bill-wave text-success"></i> Informasi Pembayaran</h6>
-                    <table class="table table-sm table-borderless">
-                        <tr><td width="120"><strong>Total Item</strong></td><td>${details.length} item</td></tr>
-                        <tr><td><strong>Subtotal</strong></td><td>Rp${formatNumber(transaksi.total)}</td></tr>
-                        <tr><td><strong>Status Bayar</strong></td><td>
-                            <span class="badge bg-success">LUNAS</span>
-                        </td></tr>
-                    </table>
-                </div>
-            </div>
-        </div>
-
-        <div class="detail-section">
-            <h6><i class="fa fa-shopping-cart text-info"></i> Detail Produk</h6>
-            <div class="table-responsive">
-                <table class="table table-sm">
-                    <thead>
-                        <tr>
-                            <th width="60">Gambar</th>
-                            <th>Produk</th>
-                            <th>Kode</th>
-                            <th width="80">Qty</th>
-                            <th width="120">Harga</th>
-                            <th width="120">Subtotal</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-    `;
-    
-    details.forEach(detail => {
-        detailHTML += `
-            <tr>
-                <td>
-                    <img src="../assets/img/produk/${detail.foto}" 
-                         class="product-image"
-                         onerror="this.src='../assets/img/default-product.jpg'">
-                </td>
-                <td>${detail.nama_produk}</td>
-                <td><code>${detail.kode}</code></td>
-                <td>${detail.qty}</td>
-                <td>Rp${formatNumber(detail.harga)}</td>
-                <td><strong>Rp${formatNumber(detail.qty * detail.harga)}</strong></td>
-            </tr>
-        `;
-    });
-    
-    detailHTML += `
-                    </tbody>
-                    <tfoot>
-                        <tr>
-                            <td colspan="5" class="text-end"><strong>Total:</strong></td>
-                            <td><strong class="text-success">Rp${formatNumber(transaksi.total)}</strong></td>
-                        </tr>
-                    </tfoot>
-                </table>
-            </div>
-        </div>
-    `;
-    
-    document.getElementById('detailContent').innerHTML = detailHTML;
-});
-
-function getStatusBadge(status) {
-    const statusConfig = {
-        'completed': { class: 'status-completed', icon: 'fa-check-circle', text: 'Completed' },
-        'pending': { class: 'status-pending', icon: 'fa-clock', text: 'Pending' },
-        'cancelled': { class: 'status-cancelled', icon: 'fa-times-circle', text: 'Cancelled' }
-    };
-    
-    const config = statusConfig[status];
-    return `<span class="badge ${config.class}"><i class="fa ${config.icon} me-1"></i>${config.text}</span>`;
-}
-
-function formatNumber(num) {
-    return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
-}
-</script>
-<?php endif; ?>
 </body>
 </html>

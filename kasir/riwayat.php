@@ -483,20 +483,15 @@ body {
     margin-bottom: 10px;
 }
 
-/* Footer */
-.footer-fixed {
-    position: fixed;
-    bottom: 0;
-    left: 250px;
-    right: 0;
-    background: #fff;
+#footer {
+    margin-left: 250px;
     text-align: center;
-    padding: 15px 0;
-    color: var(--gray);
-    font-size: 0.85rem;
+    padding: 20px 0;
+    color: #6b7280;
+    font-size: 14px;
     border-top: 1px solid #e5e7eb;
+    position: relative;
     z-index: 100;
-    transition: all 0.3s;
 }
 
 /* Search Box */
@@ -676,10 +671,10 @@ body {
     .chart-container {
         height: 300px;
     }
-    .footer-fixed {
-        left: 0;
-        padding: 10px 0;
-        font-size: 0.8rem;
+     #footer {
+        margin-left: 0;
+        padding: 15px 0;
+        font-size: 12px;
     }
 }
 
@@ -743,9 +738,9 @@ body {
         <span class="nav-text">Riwayat Transaksi</span>
     </a>
     
-    <a href="retur.php">
-        <i class="fa fa-box"></i>
-        <span class="nav-text">Retur Barang</span>
+    <a href="laporan.php">
+        <i class="fa fa-file-alt"></i>
+        <span class="nav-text">Laporan Penjualan</span>
     </a>
     
     <div style="margin-top: auto; padding: 20px;">
@@ -1075,9 +1070,8 @@ body {
     </div>
 </div>
 
-<!-- Footer Fixed -->
-<footer class="footer-fixed" id="footer">
-    &copy; <?= date('Y'); ?> Kasir Computer — Riwayat Transaksi | Kasir: <?= htmlspecialchars($_SESSION['username']); ?>
+<footer id="footer">
+    &copy; <?= date('Y'); ?> Kasir Computer — Developed by Abyan
 </footer>
 
 <!-- Modal Detail Transaksi -->

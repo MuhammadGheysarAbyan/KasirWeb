@@ -103,26 +103,14 @@ $transaksi_hari_ini = mysqli_query($conn, "
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <style>
-/* CSS STYLE TETAP SAMA PERSIS */
-:root {
-    --primary: #3b82f6;
-    --primary-dark: #2563eb;
-    --secondary: #1e293b;
-    --success: #10b981;
-    --warning: #f59e0b;
-    --danger: #ef4444;
-    --light: #f8fafc;
-    --dark: #1e293b;
-    --gray: #64748b;
-}
-
-body { 
-    font-family: 'Poppins', sans-serif; 
-    background: #f0f2f5; 
+/* SAMA PERSIS DENGAN DASHBOARD KASIR */
+body {
+    font-family: 'Poppins', sans-serif;
+    background: #f0f2f5;
     overflow-x: hidden;
 }
 
-/* Sidebar Styles */
+/* Sidebar Styles - Fixed tanpa collapse */
 .sidebar { 
     width: 250px; 
     height: 100vh; 
@@ -177,7 +165,7 @@ body {
     font-size: 1.1rem;
 }
 
-/* Topbar Styles */
+/* Topbar Styles - SAMA PERSIS */
 .topbar {
     margin-left: 250px;
     height: 70px;
@@ -212,121 +200,195 @@ body {
     color: white;
 }
 
-/* Content Styles */
+/* Content Styles - SAMA PERSIS */
 .content {
     margin-left: 250px;
     padding: 30px;
     min-height: 100vh;
 }
 
-/* Card Styles */
+/* Stats Container - SAMA PERSIS */
+.stats-container {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 15px;
+    margin-bottom: 20px;
+}
+.stat-card {
+    background: #fff;
+    padding: 20px;
+    border-radius: 12px;
+    text-align: center;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    transition: transform 0.3s ease;
+}
+.stat-card:hover {
+    transform: translateY(-5px);
+}
+.stat-card i {
+    font-size: 24px;
+    margin-bottom: 10px;
+}
+.stat-number {
+    font-size: 24px;
+    font-weight: 700;
+    color: #1e293b;
+}
+.stat-label {
+    font-size: 14px;
+    color: #6b7280;
+}
+
+/* Card Styling - SAMA PERSIS */
 .card {
     border: none;
     border-radius: 15px;
-    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-    padding: 25px;
-    background: #fff;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.1);
     margin-bottom: 25px;
-}
-.card-header {
-    background: none;
-    border-bottom: 2px solid #e5e7eb;
-    padding: 0 0 15px 0;
-    margin-bottom: 20px;
-}
-.card-header h5 {
-    font-weight: 600;
-    color: var(--dark);
-    margin: 0;
-    display: flex;
-    align-items: center;
-    gap: 10px;
+    background: #fff;
+    padding: 20px;
 }
 
-/* Table Styles */
-.table-container {
+.graph-card, .summary-card {
     background: #fff;
     border-radius: 12px;
-    overflow: hidden;
+    padding: 20px;
     box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    margin-bottom: 20px;
+    height: 100%;
 }
-.table th { 
-    background: #1e293b; 
-    color: #fff; 
+.graph-card h4, .summary-card h4 {
     font-weight: 600;
-    border: none;
+    margin-bottom: 20px;
+    color: #1e293b;
+    border-bottom: 2px solid #e5e7eb;
+    padding-bottom: 10px;
+}
+
+/* Table Styling - SAMA PERSIS */
+.table {
+    margin-bottom: 0;
+}
+
+.table th {
+    background-color: #1e293b;
+    color: #fff;
+    border-bottom: 2px solid #e5e7eb;
+    font-weight: 600;
     padding: 15px;
 }
+
 .table td {
     padding: 12px 15px;
     vertical-align: middle;
     border-color: #e5e7eb;
 }
 
-/* Button Styles */
-.btn-primary {
-    background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
-    border: none;
-    border-radius: 10px;
-    padding: 10px 20px;
+/* Badge Styling - SAMA PERSIS */
+.badge {
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 12px;
     font-weight: 600;
-    transition: all 0.3s ease;
-}
-.btn-primary:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 20px rgba(59, 130, 246, 0.4);
-    background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary) 100%);
-}
-.btn-success {
-    border-radius: 8px;
-    padding: 6px 12px;
-    font-weight: 500;
-    transition: all 0.3s ease;
-}
-.btn-success:hover {
-    transform: translateY(-1px);
-}
-.btn-danger {
-    border-radius: 8px;
-    padding: 6px 12px;
-    font-weight: 500;
 }
 
-/* Search Box */
-.search-container {
-    position: relative;
-    margin-bottom: 20px;
+/* Button Styling - SAMA PERSIS */
+.btn-sm {
+    padding: 6px 12px;
+    border-radius: 8px;
+    font-size: 13px;
 }
-.search-container i {
-    position: absolute;
-    left: 15px;
-    top: 50%;
-    transform: translateY(-50%);
-    color: var(--gray);
-}
-.search-container input {
-    padding-left: 45px;
-    border-radius: 10px;
+
+/* Form Controls - SAMA PERSIS */
+.form-control, .form-select {
     border: 2px solid #e5e7eb;
-    transition: all 0.3s ease;
+    border-radius: 10px;
+    padding: 10px 15px;
+    transition: all 0.3s;
 }
-.search-container input:focus {
-    border-color: var(--primary);
+
+.form-control:focus, .form-select:focus {
+    border-color: #3b82f6;
     box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
 }
 
-/* Cart Summary */
-.cart-summary {
-    background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
-    border-radius: 12px;
-    padding: 20px;
-    border-left: 4px solid var(--primary);
+/* Welcome Box */
+.welcome-box {
+    background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+    color: white;
+    padding: 25px;
+    border-radius: 15px;
+    margin-bottom: 25px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 5px 15px rgba(59, 130, 246, 0.3);
 }
+.welcome-box h2 { 
+    font-weight: 700; 
+    margin: 0; 
+    font-size: 1.8rem;
+}
+.welcome-box .date-info {
+    background: rgba(255, 255, 255, 0.2);
+    padding: 12px 20px;
+    border-radius: 10px;
+    font-weight: 600;
+    font-size: 1rem;
+}
+
+/* Mini Card */
+.mini-card {
+    background: #fff;
+    border-radius: 12px;
+    padding: 18px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    margin-bottom: 15px;
+    border-left: 4px solid #3b82f6;
+}
+.mini-card.warning { border-left-color: #f59e0b; }
+.mini-card.danger { border-left-color: #ef4444; }
+.mini-card.success { border-left-color: #10b981; }
+.mini-card h6 { 
+    margin: 0 0 8px 0; 
+    font-weight: 600;
+    font-size: 1rem;
+}
+.mini-card p { 
+    margin: 0; 
+    color: #6b7280; 
+    font-size: 14px; 
+}
+
+/* Quick Stats */
+.quick-stats {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 15px;
+    margin-top: 20px;
+}
+.quick-stat {
+    background: #f8fafc;
+    padding: 15px;
+    border-radius: 10px;
+    text-align: center;
+}
+.quick-stat .value {
+    font-weight: 700;
+    font-size: 20px;
+    color: #1e293b;
+}
+.quick-stat .label {
+    font-size: 13px;
+    color: #6b7280;
+}
+
+/* Cart Item Styles */
 .cart-item {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 10px 0;
+    padding: 12px 0;
     border-bottom: 1px solid #e5e7eb;
 }
 .cart-item:last-child {
@@ -337,11 +399,11 @@ body {
 }
 .cart-item-name {
     font-weight: 500;
-    color: var(--dark);
+    color: #1e293b;
 }
 .cart-item-meta {
     font-size: 0.85rem;
-    color: var(--gray);
+    color: #6b7280;
 }
 .cart-item-actions {
     display: flex;
@@ -366,9 +428,9 @@ body {
     transition: all 0.3s ease;
 }
 .quantity-btn:hover {
-    background: var(--primary);
+    background: #3b82f6;
     color: white;
-    border-color: var(--primary);
+    border-color: #3b82f6;
 }
 .quantity-input {
     width: 50px;
@@ -380,7 +442,7 @@ body {
 
 /* Payment Section */
 .payment-section {
-    background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+    background: linear-gradient(135deg, #3b82f6, #1d4ed8);
     color: white;
     border-radius: 15px;
     padding: 25px;
@@ -426,40 +488,39 @@ body {
     transition: all 0.3s ease;
 }
 .quick-action-btn:hover {
-    border-color: var(--primary);
+    border-color: #3b82f6;
     background: white;
     transform: translateY(-2px);
 }
 
-/* Stats Cards */
-.stats-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 15px;
+/* Search Box */
+.search-container {
+    position: relative;
     margin-bottom: 20px;
 }
-.stat-card {
-    background: white;
-    padding: 15px;
+.search-container i {
+    position: absolute;
+    left: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #6b7280;
+}
+.search-container input {
+    padding-left: 45px;
     border-radius: 10px;
-    text-align: center;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    border: 2px solid #e5e7eb;
+    transition: all 0.3s ease;
 }
-.stat-value {
-    font-size: 1.5rem;
-    font-weight: 700;
-    color: var(--primary);
-}
-.stat-label {
-    font-size: 0.85rem;
-    color: var(--gray);
+.search-container input:focus {
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
 }
 
 /* Empty States */
 .empty-state {
     text-align: center;
     padding: 40px 20px;
-    color: var(--gray);
+    color: #6b7280;
 }
 .empty-state i {
     font-size: 3rem;
@@ -467,14 +528,15 @@ body {
     opacity: 0.5;
 }
 
-/* Badge */
-.badge-stock {
-    font-size: 0.75rem;
-    padding: 4px 8px;
-    border-radius: 20px;
+/* Cart Summary */
+.cart-summary {
+    background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+    border-radius: 12px;
+    padding: 20px;
+    border-left: 4px solid #3b82f6;
 }
 
-/* Mobile Responsive */
+/* Mobile Responsive - SAMA PERSIS */
 @media (max-width: 768px) {
     .sidebar {
         transform: translateX(-100%);
@@ -483,51 +545,39 @@ body {
     .sidebar.mobile-open {
         transform: translateX(0);
     }
-    .topbar, .content {
+    .topbar, .content, footer {
         margin-left: 0;
     }
     .mobile-toggle {
         display: block !important;
     }
-    .payment-info {
+    .stats-container {
         grid-template-columns: 1fr;
     }
-    .quick-actions {
-        grid-template-columns: repeat(2, 1fr);
+    .welcome-box {
+        flex-direction: column;
+        text-align: center;
+        gap: 15px;
     }
-    .stats-grid {
+    .payment-info, .quick-actions {
         grid-template-columns: 1fr;
     }
 }
 
-/* Animation */
-@keyframes fadeIn {
-    from { opacity: 0; transform: translateY(10px); }
-    to { opacity: 1; transform: translateY(0); }
-}
-.fade-in {
-    animation: fadeIn 0.3s ease;
-}
-
-/* Print Styles */
-@media print {
-    .sidebar, .topbar, .btn, .search-container {
-        display: none !important;
-    }
-    .content {
-        margin-left: 0 !important;
-        padding: 0 !important;
-    }
-    .card {
-        box-shadow: none !important;
-        border: 1px solid #ddd !important;
-    }
+/* Footer - SAMA PERSIS */
+footer {
+    margin-left: 250px;
+    text-align: center;
+    padding: 20px 0;
+    color: #6b7280;
+    font-size: 14px;
+    border-top: 1px solid #e5e7eb;
 }
 </style>
 </head>
 <body>
 
-<!-- Sidebar -->
+<!-- Sidebar - MENU KASIR -->
 <div class="sidebar" id="sidebar">
     <div class="logo">
         <img src="../assets/img/Abyan (10) Kasir Computer.jpg" alt="Logo">
@@ -549,11 +599,12 @@ body {
         <span class="nav-text">Riwayat Transaksi</span>
     </a>
     
-    <a href="retur.php">
-        <i class="fa fa-box"></i>
-        <span class="nav-text">Retur Barang</span>
+    <a href="laporan.php">
+        <i class="fa fa-file-alt"></i>
+        <span class="nav-text">Laporan Penjualan</span>
     </a>
     
+    <!-- LOGOUT BUTTON - SAMA PERSIS -->
     <div style="margin-top: auto; padding: 20px;">
         <a href="../auth/logout.php" class="btn btn-danger w-100" style="border-radius: 10px;">
             <i class="fa fa-sign-out-alt"></i>
@@ -562,14 +613,14 @@ body {
     </div>
 </div>
 
-<!-- Topbar -->
+<!-- Topbar - SAMA PERSIS -->
 <div class="topbar" id="topbar">
     <div class="d-flex align-items-center">
         <button class="btn btn-primary me-3 mobile-toggle" style="display: none; border-radius: 8px;" onclick="toggleMobileSidebar()">
             <i class="fa fa-bars"></i>
         </button>
         <div class="title">
-            Transaksi Kasir
+            <i class="fa fa-shopping-cart me-2"></i>Transaksi Kasir
         </div>
     </div>
     <div class="user-menu">
@@ -623,54 +674,61 @@ body {
         </div>
     <?php endif; ?>
 
-    <div class="row">
-        <!-- Quick Stats -->
-        <div class="col-12 mb-4">
-            <div class="stats-grid">
-                <div class="stat-card">
-                    <div class="stat-value"><?= mysqli_num_rows($produk); ?></div>
-                    <div class="stat-label">Produk Tersedia</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-value">
-                        <?php 
-                        $total_hari_ini = mysqli_fetch_assoc(mysqli_query($conn, 
-                            "SELECT COUNT(*) as total FROM transaksi 
-                             WHERE DATE(tanggal) = CURDATE() AND kasir_id = '".$_SESSION['id']."'"
-                        ));
-                        echo $total_hari_ini['total'];
-                        ?>
-                    </div>
-                    <div class="stat-label">Transaksi Hari Ini</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-value">
-                        <?php
-                        $pendapatan_hari_ini = mysqli_fetch_assoc(mysqli_query($conn,
-                            "SELECT COALESCE(SUM(total), 0) as total FROM transaksi 
-                             WHERE DATE(tanggal) = CURDATE() AND kasir_id = '".$_SESSION['id']."'"
-                        ));
-                        echo 'Rp ' . number_format($pendapatan_hari_ini['total'], 0, ',', '.');
-                        ?>
-                    </div>
-                    <div class="stat-label">Pendapatan Hari Ini</div>
-                </div>
-            </div>
+    <!-- Welcome Box -->
+    <div class="welcome-box">
+        <h2>Transaksi Baru 🛒</h2>
+        <div class="date-info">
+            <i class="fa fa-calendar me-2"></i><?= date('d F Y'); ?>
         </div>
+    </div>
 
+    <!-- Quick Stats -->
+    <div class="stats-container">
+        <div class="stat-card">
+            <i class="fa fa-box text-primary"></i>
+            <div class="stat-number"><?= mysqli_num_rows($produk); ?></div>
+            <div class="stat-label">Produk Tersedia</div>
+        </div>
+        <div class="stat-card">
+            <i class="fa fa-shopping-cart text-success"></i>
+            <div class="stat-number">
+                <?php 
+                $total_hari_ini = mysqli_fetch_assoc(mysqli_query($conn, 
+                    "SELECT COUNT(*) as total FROM transaksi 
+                     WHERE DATE(tanggal) = CURDATE() AND kasir_id = '".$_SESSION['id']."'"
+                ));
+                echo $total_hari_ini['total'];
+                ?>
+            </div>
+            <div class="stat-label">Transaksi Hari Ini</div>
+        </div>
+        <div class="stat-card">
+            <i class="fa fa-money-bill-wave text-warning"></i>
+            <div class="stat-number">
+                <?php
+                $pendapatan_hari_ini = mysqli_fetch_assoc(mysqli_query($conn,
+                    "SELECT COALESCE(SUM(total), 0) as total FROM transaksi 
+                     WHERE DATE(tanggal) = CURDATE() AND kasir_id = '".$_SESSION['id']."'"
+                ));
+                echo 'Rp ' . number_format($pendapatan_hari_ini['total'], 0, ',', '.');
+                ?>
+            </div>
+            <div class="stat-label">Pendapatan Hari Ini</div>
+        </div>
+    </div>
+
+    <div class="row">
         <!-- Produk Section -->
         <div class="col-lg-8">
             <div class="card">
-                <div class="card-header">
-                    <h5><i class="fa fa-boxes text-primary"></i> Daftar Produk Tersedia</h5>
-                </div>
+                <h4><i class="fa fa-boxes text-primary me-2"></i>Daftar Produk Tersedia</h4>
                 
                 <div class="search-container">
                     <i class="fa fa-search"></i>
                     <input type="text" id="searchProduk" class="form-control" placeholder="Cari produk...">
                 </div>
 
-                <div class="table-container">
+                <div class="table-responsive">
                     <table class="table table-hover" id="tabelProduk">
                         <thead>
                             <tr>
@@ -678,7 +736,7 @@ body {
                                 <th>Nama Produk</th>
                                 <th width="120">Harga</th>
                                 <th width="100">Stok</th>
-                                <th width="100">Kategori</th>
+                                <th width="120">Kategori</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -703,9 +761,9 @@ body {
                                     </td>
                                     <td class="fw-bold text-success">Rp <?= number_format($p['harga'],0,',','.'); ?></td>
                                     <td>
-                                        <span class="badge <?= $stock_class ?> badge-stock"><?= $p['stok']; ?> unit</span>
+                                        <span class="badge <?= $stock_class ?>"><?= $p['stok']; ?> unit</span>
                                         <?php if($p['stok'] <= 5): ?>
-                                            <br><small class="text-warning"><i class="fa fa-exclamation-triangle"></i> Menipis</small>
+                                            <br><small class="text-warning"><i class="fa fa-exclamation-triangle me-1"></i>Menipis</small>
                                         <?php endif; ?>
                                     </td>
                                     <td>
@@ -731,9 +789,7 @@ body {
 
             <!-- Riwayat Transaksi Hari Ini -->
             <div class="card">
-                <div class="card-header">
-                    <h5><i class="fa fa-history text-info"></i> Riwayat Transaksi Hari Ini</h5>
-                </div>
+                <h4><i class="fa fa-history text-info me-2"></i>Riwayat Transaksi Hari Ini</h4>
                 <div class="table-responsive">
                     <table class="table">
                         <thead>
@@ -751,8 +807,8 @@ body {
                                 <tr>
                                     <td><strong><?= $transaksi['kode_transaksi']; ?></strong></td>
                                     <td><?= date('H:i', strtotime($transaksi['waktu'])); ?></td>
-                                    <td>Rp <?= number_format($transaksi['total'], 0, ',', '.'); ?></td>
-                                    <td><?= $transaksi['jumlah_item']; ?> item</td>
+                                    <td class="text-success">Rp <?= number_format($transaksi['total'], 0, ',', '.'); ?></td>
+                                    <td><span class="badge bg-primary"><?= $transaksi['jumlah_item']; ?> item</span></td>
                                     <td>
                                         <button class="btn btn-sm btn-outline-primary" onclick="printStruk(<?= $transaksi['id']; ?>)">
                                             <i class="fa fa-print"></i>
@@ -762,7 +818,13 @@ body {
                                 <?php endwhile; ?>
                             <?php else: ?>
                                 <tr>
-                                    <td colspan="5" class="text-center text-muted">Belum ada transaksi hari ini</td>
+                                    <td colspan="5" class="text-center py-4">
+                                        <div class="empty-state">
+                                            <i class="fa fa-history"></i>
+                                            <h6>Belum ada transaksi hari ini</h6>
+                                            <p>Mulai transaksi pertama Anda</p>
+                                        </div>
+                                    </td>
                                 </tr>
                             <?php endif; ?>
                         </tbody>
@@ -779,23 +841,21 @@ body {
                 <input type="hidden" name="diskon" id="diskonInput" value="0">
                 
                 <div class="card">
-                    <div class="card-header">
-                        <h5><i class="fa fa-shopping-cart text-success"></i> Keranjang Belanja</h5>
-                    </div>
+                    <h4><i class="fa fa-shopping-cart text-success me-2"></i>Keranjang Belanja</h4>
 
                     <!-- Quick Actions -->
                     <div class="quick-actions mb-3">
                         <div class="quick-action-btn" onclick="clearCart()">
-                            <i class="fa fa-trash text-danger"></i>
-                            <div class="small">Kosongkan</div>
+                            <i class="fa fa-trash text-danger me-1"></i>
+                            <span class="small">Kosongkan</span>
                         </div>
                         <div class="quick-action-btn" onclick="applyDiscount(10)">
-                            <i class="fa fa-tag text-warning"></i>
-                            <div class="small">Diskon 10%</div>
+                            <i class="fa fa-tag text-warning me-1"></i>
+                            <span class="small">Diskon 10%</span>
                         </div>
                         <div class="quick-action-btn" onclick="removeDiscount()">
-                            <i class="fa fa-times text-danger"></i>
-                            <div class="small">Hapus Diskon</div>
+                            <i class="fa fa-times text-danger me-1"></i>
+                            <span class="small">Hapus Diskon</span>
                         </div>
                     </div>
 
@@ -878,6 +938,10 @@ body {
     </div>
 </div>
 
+<footer>
+    &copy; <?= date('Y'); ?> Kasir Computer — Developed by Abyan
+</footer>
+
 <!-- Struk Printing Template (Hidden) -->
 <div id="strukTemplate" style="display: none;"></div>
 
@@ -931,7 +995,7 @@ function updateKeranjang() {
         totalHarga += subtotal;
         
         html += `
-            <div class="cart-item fade-in">
+            <div class="cart-item">
                 <div class="cart-item-info">
                     <div class="cart-item-name">${item.nama}</div>
                     <div class="cart-item-meta">

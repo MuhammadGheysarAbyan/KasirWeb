@@ -502,11 +502,6 @@ footer {
         <span class="nav-text">Laporan Penjualan</span>
     </a>
     
-    <a href="retur.php">
-        <i class="fa fa-box"></i>
-        <span class="nav-text">Retur Barang</span>
-    </a>
-    
     <a href="settings.php">
         <i class="fa fa-cog"></i>
         <span class="nav-text">Pengaturan</span>

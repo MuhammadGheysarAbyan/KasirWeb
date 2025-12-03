@@ -112,7 +112,7 @@ body {
     overflow-x: hidden;
 }
 
-/* Sidebar Styles - Fixed tanpa collapse */
+/* Sidebar Styles - Fixed tanpa collapse - SAMA PERSIS */
 .sidebar { 
     width: 250px; 
     height: 100vh; 
@@ -167,7 +167,7 @@ body {
     font-size: 1.1rem;
 }
 
-/* Topbar Styles */
+/* Topbar Styles - SAMA PERSIS */
 .topbar {
     margin-left: 250px;
     height: 70px;
@@ -202,14 +202,14 @@ body {
     color: white;
 }
 
-/* Content Styles */
+/* Content Styles - SAMA PERSIS */
 .content {
     margin-left: 250px;
     padding: 30px;
     min-height: 100vh;
 }
 
-/* Custom Styles untuk User */
+/* Stats Container - SAMA PERSIS */
 .stats-container {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
@@ -241,6 +241,7 @@ body {
     color: #6b7280;
 }
 
+/* Card Styling - SAMA PERSIS */
 .card {
     border: none;
     border-radius: 15px;
@@ -248,6 +249,16 @@ body {
     margin-bottom: 25px;
 }
 
+/* Search Filter Container - SAMA DENGAN LAINNYA */
+.search-container {
+    background: #fff;
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 20px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+/* Table Styling - SAMA PERSIS */
 .table {
     margin-bottom: 0;
 }
@@ -266,6 +277,7 @@ body {
     border-color: #e5e7eb;
 }
 
+/* Badge Styling - SAMA PERSIS */
 .badge {
     padding: 8px 12px;
     border-radius: 20px;
@@ -273,18 +285,21 @@ body {
     font-weight: 600;
 }
 
+/* Button Styling - SAMA PERSIS */
 .btn-sm {
     padding: 6px 12px;
     border-radius: 8px;
     font-size: 13px;
 }
 
+/* Action Buttons - SAMA PERSIS */
 .action-buttons {
     display: flex;
     gap: 8px;
     justify-content: center;
 }
 
+/* User Avatar */
 .user-avatar {
     width: 40px;
     height: 40px;
@@ -298,14 +313,7 @@ body {
     font-size: 16px;
 }
 
-.search-container {
-    background: #fff;
-    padding: 20px;
-    border-radius: 12px;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-    margin-bottom: 20px;
-}
-
+/* Form Controls - SAMA PERSIS */
 .form-control, .form-select {
     border: 2px solid #e5e7eb;
     border-radius: 10px;
@@ -318,6 +326,7 @@ body {
     box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
 }
 
+/* Modal Styling - SAMA PERSIS */
 .modal-header {
     border-bottom: 2px solid #e5e7eb;
 }
@@ -325,16 +334,10 @@ body {
     border-top: 2px solid #e5e7eb;
 }
 
+/* User Details */
 .last-login {
     font-size: 12px;
     color: #6b7280;
-}
-
-.table-container {
-    background: #fff;
-    border-radius: 12px;
-    overflow: hidden;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
 }
 
 .user-info-row {
@@ -353,7 +356,7 @@ body {
     border-radius: 15px;
 }
 
-/* Mobile Responsive */
+/* Mobile Responsive - SAMA PERSIS */
 @media (max-width: 768px) {
     .sidebar {
         transform: translateX(-100%);
@@ -377,6 +380,7 @@ body {
     }
 }
 
+/* Footer - SAMA PERSIS */
 footer {
     margin-left: 250px;
     text-align: center;
@@ -389,7 +393,7 @@ footer {
 </head>
 <body>
 
-<!-- Sidebar -->
+<!-- Sidebar - SAMA PERSIS -->
 <div class="sidebar" id="sidebar">
     <div class="logo">
         <img src="../assets/img/Abyan (10) Kasir Computer.jpg" alt="Logo">
@@ -420,11 +424,6 @@ footer {
         <i class="fa fa-file-alt"></i>
         <span class="nav-text">Laporan Penjualan</span>
     </a>
-
-    <a href="retur.php">
-        <i class="fa fa-box"></i>
-        <span class="nav-text">Retur Barang</span>
-    </a>
     
     <a href="settings.php">
         <i class="fa fa-cog"></i>
@@ -439,7 +438,7 @@ footer {
     </div>
 </div>
 
-<!-- Topbar -->
+<!-- Topbar - SAMA PERSIS -->
 <div class="topbar" id="topbar">
     <div class="d-flex align-items-center">
         <button class="btn btn-primary me-3 mobile-toggle" style="display: none; border-radius: 8px;" onclick="toggleMobileSidebar()">
@@ -516,339 +515,349 @@ footer {
             </div>
         </div>
     </div>
-<!-- Tabel User -->
-<div class="table-container">
-    <table class="table table-hover align-middle" id="usersTable">
-        <thead>
-            <tr>
-                <th width="100">User Code</th>
-                <th width="60">Avatar</th>
-                <th width="200">User Details</th>
-                <th width="80">Role</th>
-                <th width="80">Shift</th>
-                <th width="100">Status</th>
-                <th width="150" class="text-center">Aksi</th>
-            </tr>
-        </thead>
-        <tbody>
-            <?php 
-            $users_data = mysqli_query($conn, "SELECT * FROM users ORDER BY id DESC");
-            while($row = mysqli_fetch_assoc($users_data)): 
-                $is_current_user = $row['id'] == $_SESSION['id'];
-                $role_badge = $row['role'] == 'admin' ? 'bg-success' : 'bg-info';
-                $status_badge = $is_current_user ? 'bg-primary' : 'bg-secondary';
-                $status_text = $is_current_user ? 'Online' : 'Offline';
-                $shift_badge = $row['shift'] ? 'bg-warning' : 'bg-secondary';
-                $shift_text = $row['shift'] ? ucfirst($row['shift']) : 'Belum diatur';
-            ?>
-            <tr>
-                <td>
-                    <strong><?= $row['user_code']; ?></strong>
-                </td>
-                <td>
-                    <div class="user-avatar" style="width: 35px; height: 35px; font-size: 14px;">
-                        <?= strtoupper(substr($row['username'], 0, 1)) ?>
-                    </div>
-                </td>
-                <td>
-                    <div class="user-details">
-                        <div class="d-flex justify-content-between align-items-start">
-                            <div style="min-width: 0; flex: 1;">
-                                <strong class="text-truncate d-block" style="max-width: 120px;" title="<?= htmlspecialchars($row['username']) ?>">
-                                    <?= htmlspecialchars($row['username']); ?>
-                                </strong>
-                                <?php if(!empty($row['nama'])): ?>
-                                    <div class="text-muted small text-truncate" style="max-width: 120px;" title="<?= htmlspecialchars($row['nama']) ?>">
-                                        <?= htmlspecialchars($row['nama']) ?>
-                                    </div>
-                                <?php endif; ?>
-                            </div>
-                        </div>
-                        <?php if(!empty($row['email'])): ?>
-                            <div class="text-muted small mt-1 text-truncate" style="max-width: 180px;" title="<?= htmlspecialchars($row['email']) ?>">
-                                <i class="fa fa-envelope"></i> <?= htmlspecialchars($row['email']) ?>
-                            </div>
-                        <?php endif; ?>
-                        <?php if(!empty($row['no_telp'])): ?>
-                            <div class="text-muted small text-truncate" style="max-width: 150px;" title="<?= htmlspecialchars($row['no_telp']) ?>">
-                                <i class="fa fa-phone"></i> <?= htmlspecialchars($row['no_telp']) ?>
-                            </div>
-                        <?php endif; ?>
-                        <div class="last-login mt-1 text-truncate" style="max-width: 180px;">
-                            <i class="fa fa-clock"></i> Terdaftar: <?= date('d M Y', strtotime($row['created_at'] ?? 'now')) ?>
-                        </div>
-                    </div>
-                </td>
-                <td>
-                    <span class="badge <?= $role_badge ?>" style="font-size: 11px;">
-                        <i class="fa fa-<?= $row['role'] == 'admin' ? 'user-shield' : 'cash-register' ?> me-1"></i>
-                        <?= ucfirst($row['role']); ?>
-                    </span>
-                </td>
-                <td>
-                    <span class="badge <?= $shift_badge ?> shift-badge" style="font-size: 11px;">
-                        <i class="fa fa-clock me-1"></i>
-                        <?= $shift_text ?>
-                    </span>
-                </td>
-                <td>
-                    <span class="badge <?= $status_badge ?>" style="font-size: 11px;">
-                        <i class="fa fa-<?= $is_current_user ? 'circle' : 'circle' ?> me-1"></i>
-                        <?= $status_text ?>
-                    </span>
-                </td>
-                <td>
-                    <div class="action-buttons">
-                        <!-- Tombol Edit -->
-                        <button class="btn btn-warning btn-sm" 
-                                data-bs-toggle="modal" 
-                                data-bs-target="#modalEdit<?= $row['id']; ?>"
-                                title="Edit User">
-                            <i class="fa fa-edit"></i>
-                        </button>
-                        
-                        <!-- Tombol Reset Password -->
-                        <button class="btn btn-info btn-sm"
-                                data-bs-toggle="modal" 
-                                data-bs-target="#modalReset<?= $row['id']; ?>"
-                                title="Reset Password">
-                            <i class="fa fa-key"></i>
-                        </button>
-                        
-                        <!-- Tombol Hapus -->
-                        <button onclick="hapusUser(<?= $row['id']; ?>, <?= $is_current_user ? 'true' : 'false' ?>)" 
-                                class="btn btn-danger btn-sm"
-                                title="Hapus User"
-                                <?= $is_current_user ? 'disabled' : '' ?>>
-                            <i class="fa fa-trash"></i>
-                        </button>
-                    </div>
-                </td>
-            </tr>
-
-            <!-- Modal Edit -->
-            <div class="modal fade" id="modalEdit<?= $row['id']; ?>" tabindex="-1">
-              <div class="modal-dialog modal-lg">
-                <div class="modal-content">
-                  <form method="POST">
-                    <div class="modal-header bg-warning text-white">
-                      <h5 class="modal-title">Edit User</h5>
-                      <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                    </div>
-                    <div class="modal-body">
-                        <input type="hidden" name="id" value="<?= $row['id']; ?>">
-                        <div class="row">
-                            <div class="col-md-6">
-                                <div class="mb-3">
-                                    <label class="form-label">Username *</label>
-                                    <input type="text" name="username" class="form-control" value="<?= $row['username']; ?>" required>
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="mb-3">
-                                    <label class="form-label">Role *</label>
-                                    <select name="role" class="form-select" required>
-                                        <option value="admin" <?= $row['role']=='admin'?'selected':''; ?>>Admin</option>
-                                        <option value="kasir" <?= $row['role']=='kasir'?'selected':''; ?>>Kasir</option>
-                                    </select>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-md-6">
-                                <div class="mb-3">
-                                    <label class="form-label">Nama Lengkap</label>
-                                    <input type="text" name="nama" class="form-control" value="<?= $row['nama'] ?? '' ?>" placeholder="Nama lengkap...">
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="mb-3">
-                                    <label class="form-label">Email</label>
-                                    <input type="email" name="email" class="form-control" value="<?= $row['email'] ?? '' ?>" placeholder="email@example.com">
-                                </div>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-md-6">
-                                <div class="mb-3">
-                                    <label class="form-label">No. Telepon</label>
-                                    <input type="text" name="no_telp" class="form-control" value="<?= $row['no_telp'] ?? '' ?>" placeholder="08...">
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="mb-3">
-                                    <label class="form-label">Shift</label>
-                                    <select name="shift" class="form-select">
-                                        <option value="">Pilih Shift</option>
-                                        <option value="pagi" <?= ($row['shift'] ?? '') == 'pagi' ? 'selected' : '' ?>>Pagi</option>
-                                        <option value="siang" <?= ($row['shift'] ?? '') == 'siang' ? 'selected' : '' ?>>Siang</option>
-                                        <option value="malam" <?= ($row['shift'] ?? '') == 'malam' ? 'selected' : '' ?>>Malam</option>
-                                    </select>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label">Alamat</label>
-                            <textarea name="alamat" class="form-control" rows="2" placeholder="Alamat lengkap..."><?= $row['alamat'] ?? '' ?></textarea>
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label">Password Baru (opsional)</label>
-                            <input type="password" name="password" class="form-control" placeholder="Kosongkan jika tidak ingin mengubah">
-                            <div class="form-text">Minimal 6 karakter</div>
-                        </div>
-                        <div class="alert alert-info">
-                            <i class="fa fa-info-circle"></i> 
-                            User Code: <strong><?= $row['user_code'] ?></strong> (Tidak dapat diubah)
-                        </div>
-                    </div>
-                    <div class="modal-footer">
-                      <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
-                      <button type="submit" name="edit" class="btn btn-warning">Update User</button>
-                    </div>
-                  </form>
-                </div>
-              </div>
+    
+    <!-- Tabel User - DIUBAH MENJADI SAMA DENGAN TRANSAKSI.PHP -->
+    <div class="card">
+        <div class="card-body">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h4 class="mb-0"><i class="fa fa-users me-2 text-primary"></i>Daftar User</h4>
+                <span class="text-muted">Total: <strong><?= $total_users; ?></strong> user</span>
             </div>
-
-            <!-- Modal Reset Password -->
-            <div class="modal fade" id="modalReset<?= $row['id']; ?>" tabindex="-1">
-              <div class="modal-dialog">
-                <div class="modal-content">
-                  <form method="POST">
-                    <div class="modal-header bg-info text-white">
-                      <h5 class="modal-title">Reset Password</h5>
-                      <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                    </div>
-                    <div class="modal-body">
-                        <input type="hidden" name="id" value="<?= $row['id']; ?>">
-                        <div class="text-center mb-4">
-                            <i class="fa fa-key fa-3x text-info mb-3"></i>
-                            <h5>Reset Password User</h5>
-                            <p class="text-muted">Password akan direset ke: <strong>123456</strong></p>
-                            <div class="alert alert-warning">
-                                <i class="fa fa-exclamation-triangle"></i>
-                                User harus mengganti password setelah login pertama kali
-                            </div>
-                        </div>
-                        <div class="user-info text-center">
-                            <div class="user-avatar d-inline-flex mb-2" style="width: 40px; height: 40px; font-size: 16px;">
+            
+            <table class="table table-hover align-middle" id="usersTable">
+                <thead>
+                    <tr>
+                        <th width="100">User Code</th>
+                        <th width="60">Avatar</th>
+                        <th width="200">User Details</th>
+                        <th width="80">Role</th>
+                        <th width="80">Shift</th>
+                        <th width="100">Status</th>
+                        <th width="150" class="text-center">Aksi</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <?php 
+                    $users_data = mysqli_query($conn, "SELECT * FROM users ORDER BY id DESC");
+                    while($row = mysqli_fetch_assoc($users_data)): 
+                        $is_current_user = $row['id'] == $_SESSION['id'];
+                        $role_badge = $row['role'] == 'admin' ? 'bg-success' : 'bg-info';
+                        $status_badge = $is_current_user ? 'bg-primary' : 'bg-secondary';
+                        $status_text = $is_current_user ? 'Online' : 'Offline';
+                        $shift_badge = $row['shift'] ? 'bg-warning' : 'bg-secondary';
+                        $shift_text = $row['shift'] ? ucfirst($row['shift']) : 'Belum diatur';
+                    ?>
+                    <tr>
+                        <td>
+                            <strong><?= $row['user_code']; ?></strong>
+                        </td>
+                        <td>
+                            <div class="user-avatar" style="width: 35px; height: 35px; font-size: 14px;">
                                 <?= strtoupper(substr($row['username'], 0, 1)) ?>
                             </div>
-                            <h6><?= htmlspecialchars($row['username']) ?></h6>
-                            <span class="badge <?= $role_badge ?>"><?= ucfirst($row['role']) ?></span>
-                            <div class="text-muted small mt-1"><?= $row['user_code'] ?></div>
+                        </td>
+                        <td>
+                            <div class="user-details">
+                                <div class="d-flex justify-content-between align-items-start">
+                                    <div style="min-width: 0; flex: 1;">
+                                        <strong class="text-truncate d-block" style="max-width: 120px;" title="<?= htmlspecialchars($row['username']) ?>">
+                                            <?= htmlspecialchars($row['username']); ?>
+                                        </strong>
+                                        <?php if(!empty($row['nama'])): ?>
+                                            <div class="text-muted small text-truncate" style="max-width: 120px;" title="<?= htmlspecialchars($row['nama']) ?>">
+                                                <?= htmlspecialchars($row['nama']) ?>
+                                            </div>
+                                        <?php endif; ?>
+                                    </div>
+                                </div>
+                                <?php if(!empty($row['email'])): ?>
+                                    <div class="text-muted small mt-1 text-truncate" style="max-width: 180px;" title="<?= htmlspecialchars($row['email']) ?>">
+                                        <i class="fa fa-envelope"></i> <?= htmlspecialchars($row['email']) ?>
+                                    </div>
+                                <?php endif; ?>
+                                <?php if(!empty($row['no_telp'])): ?>
+                                    <div class="text-muted small text-truncate" style="max-width: 150px;" title="<?= htmlspecialchars($row['no_telp']) ?>">
+                                        <i class="fa fa-phone"></i> <?= htmlspecialchars($row['no_telp']) ?>
+                                    </div>
+                                <?php endif; ?>
+                                <div class="last-login mt-1 text-truncate" style="max-width: 180px;">
+                                    <i class="fa fa-clock"></i> Terdaftar: <?= date('d M Y', strtotime($row['created_at'] ?? 'now')) ?>
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            <span class="badge <?= $role_badge ?>" style="font-size: 11px;">
+                                <i class="fa fa-<?= $row['role'] == 'admin' ? 'user-shield' : 'cash-register' ?> me-1"></i>
+                                <?= ucfirst($row['role']); ?>
+                            </span>
+                        </td>
+                        <td>
+                            <span class="badge <?= $shift_badge ?> shift-badge" style="font-size: 11px;">
+                                <i class="fa fa-clock me-1"></i>
+                                <?= $shift_text ?>
+                            </span>
+                        </td>
+                        <td>
+                            <span class="badge <?= $status_badge ?>" style="font-size: 11px;">
+                                <i class="fa fa-<?= $is_current_user ? 'circle' : 'circle' ?> me-1"></i>
+                                <?= $status_text ?>
+                            </span>
+                        </td>
+                        <td>
+                            <div class="action-buttons">
+                                <!-- Tombol Edit -->
+                                <button class="btn btn-warning btn-sm" 
+                                        data-bs-toggle="modal" 
+                                        data-bs-target="#modalEdit<?= $row['id']; ?>"
+                                        title="Edit User">
+                                    <i class="fa fa-edit"></i>
+                                </button>
+                                
+                                <!-- Tombol Reset Password -->
+                                <button class="btn btn-info btn-sm"
+                                        data-bs-toggle="modal" 
+                                        data-bs-target="#modalReset<?= $row['id']; ?>"
+                                        title="Reset Password">
+                                    <i class="fa fa-key"></i>
+                                </button>
+                                
+                                <!-- Tombol Hapus -->
+                                <button onclick="hapusUser(<?= $row['id']; ?>, <?= $is_current_user ? 'true' : 'false' ?>)" 
+                                        class="btn btn-danger btn-sm"
+                                        title="Hapus User"
+                                        <?= $is_current_user ? 'disabled' : '' ?>>
+                                    <i class="fa fa-trash"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+
+                    <!-- Modal Edit -->
+                    <div class="modal fade" id="modalEdit<?= $row['id']; ?>" tabindex="-1">
+                      <div class="modal-dialog modal-lg">
+                        <div class="modal-content">
+                          <form method="POST">
+                            <div class="modal-header bg-warning text-white">
+                              <h5 class="modal-title">Edit User</h5>
+                              <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                            </div>
+                            <div class="modal-body">
+                                <input type="hidden" name="id" value="<?= $row['id']; ?>">
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label class="form-label">Username *</label>
+                                            <input type="text" name="username" class="form-control" value="<?= $row['username']; ?>" required>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label class="form-label">Role *</label>
+                                            <select name="role" class="form-select" required>
+                                                <option value="admin" <?= $row['role']=='admin'?'selected':''; ?>>Admin</option>
+                                                <option value="kasir" <?= $row['role']=='kasir'?'selected':''; ?>>Kasir</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label class="form-label">Nama Lengkap</label>
+                                            <input type="text" name="nama" class="form-control" value="<?= $row['nama'] ?? '' ?>" placeholder="Nama lengkap...">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label class="form-label">Email</label>
+                                            <input type="email" name="email" class="form-control" value="<?= $row['email'] ?? '' ?>" placeholder="email@example.com">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label class="form-label">No. Telepon</label>
+                                            <input type="text" name="no_telp" class="form-control" value="<?= $row['no_telp'] ?? '' ?>" placeholder="08...">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label class="form-label">Shift</label>
+                                            <select name="shift" class="form-select">
+                                                <option value="">Pilih Shift</option>
+                                                <option value="pagi" <?= ($row['shift'] ?? '') == 'pagi' ? 'selected' : '' ?>>Pagi</option>
+                                                <option value="siang" <?= ($row['shift'] ?? '') == 'siang' ? 'selected' : '' ?>>Siang</option>
+                                                <option value="malam" <?= ($row['shift'] ?? '') == 'malam' ? 'selected' : '' ?>>Malam</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Alamat</label>
+                                    <textarea name="alamat" class="form-control" rows="2" placeholder="Alamat lengkap..."><?= $row['alamat'] ?? '' ?></textarea>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Password Baru (opsional)</label>
+                                    <input type="password" name="password" class="form-control" placeholder="Kosongkan jika tidak ingin mengubah">
+                                    <div class="form-text">Minimal 6 karakter</div>
+                                </div>
+                                <div class="alert alert-info">
+                                    <i class="fa fa-info-circle"></i> 
+                                    User Code: <strong><?= $row['user_code'] ?></strong> (Tidak dapat diubah)
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                              <button type="submit" name="edit" class="btn btn-warning">Update User</button>
+                            </div>
+                          </form>
+                        </div>
+                      </div>
+                    </div>
+
+                    <!-- Modal Reset Password -->
+                    <div class="modal fade" id="modalReset<?= $row['id']; ?>" tabindex="-1">
+                      <div class="modal-dialog">
+                        <div class="modal-content">
+                          <form method="POST">
+                            <div class="modal-header bg-info text-white">
+                              <h5 class="modal-title">Reset Password</h5>
+                              <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                            </div>
+                            <div class="modal-body">
+                                <input type="hidden" name="id" value="<?= $row['id']; ?>">
+                                <div class="text-center mb-4">
+                                    <i class="fa fa-key fa-3x text-info mb-3"></i>
+                                    <h5>Reset Password User</h5>
+                                    <p class="text-muted">Password akan direset ke: <strong>123456</strong></p>
+                                    <div class="alert alert-warning">
+                                        <i class="fa fa-exclamation-triangle"></i>
+                                        User harus mengganti password setelah login pertama kali
+                                    </div>
+                                </div>
+                                <div class="user-info text-center">
+                                    <div class="user-avatar d-inline-flex mb-2" style="width: 40px; height: 40px; font-size: 16px;">
+                                        <?= strtoupper(substr($row['username'], 0, 1)) ?>
+                                    </div>
+                                    <h6><?= htmlspecialchars($row['username']) ?></h6>
+                                    <span class="badge <?= $role_badge ?>"><?= ucfirst($row['role']) ?></span>
+                                    <div class="text-muted small mt-1"><?= $row['user_code'] ?></div>
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                              <button type="submit" name="reset_password" class="btn btn-info">Reset Password</button>
+                            </div>
+                          </form>
+                        </div>
+                      </div>
+                    </div>
+                    <?php endwhile; ?>
+                    
+                    <?php if($total_users == 0): ?>
+                    <tr>
+                        <td colspan="7" class="text-center py-4">
+                            <i class="fa fa-users fa-3x text-muted mb-3"></i>
+                            <h5 class="text-muted">Belum ada user terdaftar</h5>
+                            <p class="text-muted">Mulai dengan menambahkan user pertama</p>
+                            <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalTambah">
+                                <i class="fa fa-plus"></i> Tambah User Pertama
+                            </button>
+                        </td>
+                    </tr>
+                    <?php endif; ?>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Modal Tambah -->
+    <div class="modal fade" id="modalTambah" tabindex="-1">
+      <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+          <form method="POST">
+            <div class="modal-header bg-primary text-white">
+              <h5 class="modal-title">Tambah User Baru</h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label class="form-label">Username *</label>
+                            <input type="text" name="username" class="form-control" placeholder="Masukkan username" required>
                         </div>
                     </div>
-                    <div class="modal-footer">
-                      <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
-                      <button type="submit" name="reset_password" class="btn btn-info">Reset Password</button>
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label class="form-label">Role *</label>
+                            <select name="role" class="form-select" required>
+                                <option value="">Pilih Role</option>
+                                <option value="admin">Admin</option>
+                                <option value="kasir">Kasir</option>
+                            </select>
+                        </div>
                     </div>
-                  </form>
                 </div>
-              </div>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label class="form-label">Nama Lengkap</label>
+                            <input type="text" name="nama" class="form-control" placeholder="Nama lengkap user">
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label class="form-label">Email</label>
+                            <input type="email" name="email" class="form-control" placeholder="email@example.com">
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label class="form-label">No. Telepon</label>
+                            <input type="text" name="no_telp" class="form-control" placeholder="08...">
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label class="form-label">Shift</label>
+                            <select name="shift" class="form-select">
+                                <option value="">Pilih Shift</option>
+                                <option value="pagi">Pagi</option>
+                                <option value="siang">Siang</option>
+                                <option value="malam">Malam</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Alamat</label>
+                    <textarea name="alamat" class="form-control" rows="2" placeholder="Alamat lengkap..."></textarea>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Password *</label>
+                    <input type="password" name="password" class="form-control" placeholder="Minimal 6 karakter" required minlength="6">
+                </div>
+                <div class="alert alert-info">
+                    <i class="fa fa-info-circle"></i> 
+                    User Code akan digenerate otomatis oleh sistem
+                </div>
             </div>
-            <?php endwhile; ?>
-            
-            <?php if($total_users == 0): ?>
-            <tr>
-                <td colspan="7" class="text-center py-4">
-                    <i class="fa fa-users fa-3x text-muted mb-3"></i>
-                    <h5 class="text-muted">Belum ada user terdaftar</h5>
-                    <p class="text-muted">Mulai dengan menambahkan user pertama</p>
-                    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalTambah">
-                        <i class="fa fa-plus"></i> Tambah User Pertama
-                    </button>
-                </td>
-            </tr>
-            <?php endif; ?>
-        </tbody>
-    </table>
-</div>
-
-<!-- Modal Tambah -->
-<div class="modal fade" id="modalTambah" tabindex="-1">
-  <div class="modal-dialog modal-lg">
-    <div class="modal-content">
-      <form method="POST">
-        <div class="modal-header bg-primary text-white">
-          <h5 class="modal-title">Tambah User Baru</h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+              <button type="submit" name="tambah" class="btn btn-primary">Tambah User</button>
+            </div>
+          </form>
         </div>
-        <div class="modal-body">
-            <div class="row">
-                <div class="col-md-6">
-                    <div class="mb-3">
-                        <label class="form-label">Username *</label>
-                        <input type="text" name="username" class="form-control" placeholder="Masukkan username" required>
-                    </div>
-                </div>
-                <div class="col-md-6">
-                    <div class="mb-3">
-                        <label class="form-label">Role *</label>
-                        <select name="role" class="form-select" required>
-                            <option value="">Pilih Role</option>
-                            <option value="admin">Admin</option>
-                            <option value="kasir">Kasir</option>
-                        </select>
-                    </div>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-md-6">
-                    <div class="mb-3">
-                        <label class="form-label">Nama Lengkap</label>
-                        <input type="text" name="nama" class="form-control" placeholder="Nama lengkap user">
-                    </div>
-                </div>
-                <div class="col-md-6">
-                    <div class="mb-3">
-                        <label class="form-label">Email</label>
-                        <input type="email" name="email" class="form-control" placeholder="email@example.com">
-                    </div>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-md-6">
-                    <div class="mb-3">
-                        <label class="form-label">No. Telepon</label>
-                        <input type="text" name="no_telp" class="form-control" placeholder="08...">
-                    </div>
-                </div>
-                <div class="col-md-6">
-                    <div class="mb-3">
-                        <label class="form-label">Shift</label>
-                        <select name="shift" class="form-select">
-                            <option value="">Pilih Shift</option>
-                            <option value="pagi">Pagi</option>
-                            <option value="siang">Siang</option>
-                            <option value="malam">Malam</option>
-                        </select>
-                    </div>
-                </div>
-            </div>
-            <div class="mb-3">
-                <label class="form-label">Alamat</label>
-                <textarea name="alamat" class="form-control" rows="2" placeholder="Alamat lengkap..."></textarea>
-            </div>
-            <div class="mb-3">
-                <label class="form-label">Password *</label>
-                <input type="password" name="password" class="form-control" placeholder="Minimal 6 karakter" required minlength="6">
-            </div>
-            <div class="alert alert-info">
-                <i class="fa fa-info-circle"></i> 
-                User Code akan digenerate otomatis oleh sistem
-            </div>
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
-          <button type="submit" name="tambah" class="btn btn-primary">Tambah User</button>
-        </div>
-      </form>
+      </div>
     </div>
-  </div>
 </div>
 
-<footer style="text-align: center; padding: 20px 0; color: #6b7280; font-size: 14px; border-top: 1px solid #e5e7eb; font-family: 'Poppins', sans-serif; margin-left: 0;">
+<!-- Footer - SAMA PERSIS -->
+<footer>
     &copy; <?= date('Y'); ?> Kasir Computer — Developed by Abyan
 </footer>
 
