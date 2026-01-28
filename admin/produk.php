@@ -749,7 +749,7 @@ footer {
                         ?>
                         <tr>
                             <td>
-                                <img src="../assets/img/produk/<?= $row['foto']; ?>" 
+                                <img src="../assets/img/produk/<?= basename($row['foto']); ?>" 
                                      class="preview" 
                                      data-bs-toggle="tooltip" 
                                      data-bs-title="<?= htmlspecialchars($row['nama_produk']) ?>"
