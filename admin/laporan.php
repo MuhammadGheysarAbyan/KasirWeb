@@ -241,7 +241,9 @@ if(isset($_GET['detail_id'])){
 <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 <style>
 /* === SEMUA STYLE SAMA PERSIS DENGAN FILE users.php === */
 body {
@@ -661,8 +663,12 @@ footer {
             <div class="col-md-4 text-end">
                 <div class="d-flex gap-2 justify-content-end">
                     <input type="text" id="searchInput" class="form-control" placeholder="🔍 Cari transaksi..." style="max-width: 250px;">
-                    <button class="btn btn-success btn-export" onclick="exportToPDF()">
-                        <i class="fa fa-file-pdf"></i> Export PDF
+                    <input type="text" id="searchInput" class="form-control" placeholder="🔍 Cari transaksi..." style="max-width: 250px;">
+                    <button class="btn btn-success btn-export ms-1" onclick="exportToExcel()">
+                        <i class="fa fa-file-excel"></i> Excel
+                    </button>
+                    <button class="btn btn-danger btn-export ms-1" onclick="exportToPDF()">
+                        <i class="fa fa-file-pdf"></i> PDF
                     </button>
                 </div>
             </div>
@@ -1044,34 +1050,118 @@ function showDetail(transaksiId) {
 
 // === Export to PDF ===
 function exportToPDF() {
-    const dates = '<?= $start ?>_to_<?= $end ?>';
-    const filename = `Laporan_Penjualan_${dates}.pdf`;
-    
     Swal.fire({
-        title: 'Export Laporan PDF',
-        text: `File ${filename} akan didownload`,
-        icon: 'info',
-        showCancelButton: true,
-        confirmButtonText: 'Download',
-        cancelButtonText: 'Batal'
-    }).then((result) => {
-        if (result.isConfirmed) {
-            // Simulate download
-            const link = document.createElement('a');
-            link.href = '#'; // In real implementation, this would be the PDF URL
-            link.download = filename;
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
+        title: 'Export ke PDF',
+        text: 'Sedang membuat PDF...',
+        timerProgressBar: true,
+        didOpen: () => {
+            Swal.showLoading();
             
-            Swal.fire({
-                title: 'Berhasil!',
-                text: 'File PDF berhasil di-generate',
-                icon: 'success',
-                timer: 2000,
-                showConfirmButton: false
+            // Create container for PDF
+            const container = document.createElement('div');
+            container.innerHTML = `
+                <h3 style="text-align:center">Laporan Penjualan</h3>
+                <p style="text-align:center">Periode: ${document.querySelector('input[name="start"]').value} s/d ${document.querySelector('input[name="end"]').value}</p>
+                <hr>
+            `;
+            
+            // Clone Stats
+            const stats = document.querySelector('.stats-container').cloneNode(true);
+            stats.style.display = 'grid'; // Ensure grid layout is preserved/converted
+            // Simpler to just stack them for PDF or let html2pdf handle it.
+            // Let's just grab the table for clean output + stats text
+            
+            const statsText = document.createElement('div');
+            statsText.style.marginBottom = '20px';
+            const statCards = document.querySelectorAll('.stat-card');
+            statCards.forEach(card => {
+                const label = card.querySelector('.stat-label').innerText;
+                const number = card.querySelector('.stat-number').innerText;
+                statsText.innerHTML += `<p><strong>${label}:</strong> ${number}</p>`;
+            });
+            container.appendChild(statsText);
+            
+            // Clone Table
+            const originalTable = document.getElementById('laporanTable');
+            const tableClone = originalTable.cloneNode(true);
+            
+            // Remove Action column
+            const ths = tableClone.querySelectorAll('th');
+            if(ths.length > 0) ths[ths.length-1].remove();
+            
+            const trs = tableClone.querySelectorAll('tr');
+            trs.forEach(tr => {
+                const tds = tr.querySelectorAll('td');
+                if(tds.length > 0) tds[tds.length-1].remove();
+            });
+            
+            container.appendChild(tableClone);
+            
+            const opt = {
+                margin: 10,
+                filename: 'Laporan_Penjualan_<?= $start ?>_<?= $end ?>.pdf',
+                image: { type: 'jpeg', quality: 0.98 },
+                html2canvas: { scale: 2 },
+                jsPDF: { unit: 'mm', format: 'a4', orientation: 'landscape' }
+            };
+            
+            html2pdf().set(opt).from(container).save().then(() => {
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Berhasil',
+                    text: 'File PDF telah didownload',
+                    timer: 2000,
+                    showConfirmButton: false
+                });
             });
         }
+    });
+}
+
+// === Export to Excel ===
+function exportToExcel() {
+    const start = '<?= $start ?>';
+    const end = '<?= $end ?>';
+    const filename = `Laporan_Penjualan_${start}_to_${end}.xls`;
+    
+    const table = document.getElementById('laporanTable');
+    if(!table) return;
+
+    const downloadLink = document.createElement("a");
+    const dataType = 'application/vnd.ms-excel';
+    
+    const clone = table.cloneNode(true);
+    
+    // Remove Action column
+    const ths = clone.querySelectorAll('th');
+    if(ths.length > 0) ths[ths.length-1].remove();
+    
+    const trs = clone.querySelectorAll('tr');
+    trs.forEach(tr => {
+        const tds = tr.querySelectorAll('td');
+        if(tds.length > 0) tds[tds.length-1].remove();
+    });
+
+    const tableHTML = clone.outerHTML.replace(/ /g, '%20');
+    
+    document.body.appendChild(downloadLink);
+    
+    if(navigator.msSaveOrOpenBlob){
+        var blob = new Blob(['\ufeff', tableHTML], {
+            type: dataType
+        });
+        navigator.msSaveOrOpenBlob( blob, filename);
+    } else {
+        downloadLink.href = 'data:' + dataType + ', ' + tableHTML;
+        downloadLink.download = filename;
+        downloadLink.click();
+    }
+    
+    Swal.fire({
+        icon: 'success',
+        title: 'Excel Downloaded',
+        timer: 1500,
+        showConfirmButton: false
     });
 }
 

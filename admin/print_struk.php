@@ -137,14 +137,27 @@ if(isset($_GET['id'])){
     </div>
     
     <div class="no-print text-center" style="margin-top: 20px;">
-        <button onclick="window.print()" class="btn btn-primary">Print Struk</button>
+        <button onclick="downloadPDF()" class="btn btn-primary">Download PDF</button>
         <button onclick="window.close()" class="btn btn-secondary">Tutup</button>
     </div>
     
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <script>
-        // Auto print when page loads
+        function downloadPDF() {
+            const element = document.querySelector('.struk-container');
+            const opt = {
+                margin: 5,
+                filename: 'struk_transaksi_<?= $transaksi_id ?>.pdf',
+                image: { type: 'jpeg', quality: 0.98 },
+                html2canvas: { scale: 2 },
+                jsPDF: { unit: 'mm', format: [80, 200], orientation: 'portrait' }
+            };
+            html2pdf().set(opt).from(element).save();
+        }
+        
+        // Auto download PDF when page loads
         window.onload = function() {
-            window.print();
+            downloadPDF();
         }
     </script>
 </body>

@@ -25,7 +25,7 @@ if(isset($_GET['id'])) {
         
         // Get transaction details
         $detail_query = mysqli_query($conn, "
-            SELECT dt.*, p.nama_produk
+            SELECT dt.*, p.nama_produk, (dt.qty * dt.harga) as subtotal
             FROM detail_transaksi dt
             JOIN produk p ON dt.produk_id = p.id
             WHERE dt.transaksi_id = $transaksi_id

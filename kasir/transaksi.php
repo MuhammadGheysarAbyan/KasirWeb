@@ -727,6 +727,7 @@ footer {
                         <thead>
                             <tr>
                                 <th width="100">Aksi</th>
+                                <th width="70">Gambar</th>
                                 <th>Nama Produk</th>
                                 <th width="120">Harga</th>
                                 <th width="100">Stok</th>
@@ -745,9 +746,16 @@ footer {
                                                 data-nama="<?= htmlspecialchars($p['nama_produk']); ?>" 
                                                 data-harga="<?= $p['harga']; ?>" 
                                                 data-stok="<?= $p['stok']; ?>"
-                                                data-kategori="<?= htmlspecialchars($p['nama_kategori']); ?>">
+                                                data-kategori="<?= htmlspecialchars($p['nama_kategori']); ?>"
+                                                data-foto="<?= htmlspecialchars(basename($p['foto'] ?? '')); ?>">
                                             <i class="fa fa-plus me-1"></i>Tambah
                                         </button>
+                                    </td>
+                                    <td>
+                                        <img src="../assets/img/produk/<?= htmlspecialchars(basename($p['foto'])); ?>" 
+                                             alt="<?= htmlspecialchars($p['nama_produk']); ?>"
+                                             style="width: 50px; height: 50px; object-fit: cover; border-radius: 8px; border: 2px solid #e5e7eb;"
+                                             onerror="this.src='../assets/img/default-product.jpg'">
                                     </td>
                                     <td>
                                         <div class="fw-semibold"><?= htmlspecialchars($p['nama_produk']); ?></div>
@@ -767,7 +775,7 @@ footer {
                                 <?php endwhile; ?>
                             <?php else: ?>
                                 <tr>
-                                    <td colspan="5" class="text-center py-4">
+                                    <td colspan="6" class="text-center py-4">
                                         <div class="empty-state">
                                             <i class="fa fa-box-open"></i>
                                             <h6>Tidak ada produk tersedia</h6>
@@ -843,14 +851,6 @@ footer {
                             <i class="fa fa-trash text-danger me-1"></i>
                             <span class="small">Kosongkan</span>
                         </div>
-                        <div class="quick-action-btn" onclick="applyDiscount(10)">
-                            <i class="fa fa-tag text-warning me-1"></i>
-                            <span class="small">Diskon 10%</span>
-                        </div>
-                        <div class="quick-action-btn" onclick="removeDiscount()">
-                            <i class="fa fa-times text-danger me-1"></i>
-                            <span class="small">Hapus Diskon</span>
-                        </div>
                     </div>
 
                     <div id="keranjangContainer">
@@ -908,6 +908,11 @@ footer {
                         </div>
 
                         <div class="mb-3">
+                            <label class="form-label text-white">Diskon (Rp)</label>
+                            <input type="number" id="diskonManualInput" class="form-control" placeholder="0" min="0" value="0">
+                        </div>
+
+                        <div class="mb-3">
                             <label class="form-label text-white">Uang Bayar</label>
                             <input type="number" name="bayar_uang" class="form-control" placeholder="Masukkan jumlah uang" min="0" required id="uangBayarInput">
                         </div>
@@ -939,11 +944,12 @@ footer {
 <!-- Struk Printing Template (Hidden) -->
 <div id="strukTemplate" style="display: none;"></div>
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 <script>
 // Keranjang belanja
 let keranjang = JSON.parse(localStorage.getItem('keranjang') || '[]');
-let diskonPersen = 0;
+// let diskonPersen = 0; // Removed
 
 // Format angka ke Rupiah
 function formatRupiah(angka) {
@@ -990,6 +996,11 @@ function updateKeranjang() {
         
         html += `
             <div class="cart-item">
+                <div class="me-2">
+                    <img src="../assets/img/produk/${item.foto}" 
+                         style="width: 40px; height: 40px; object-fit: cover; border-radius: 6px;"
+                         onerror="this.src='../assets/img/default-product.jpg'">
+                </div>
                 <div class="cart-item-info">
                     <div class="cart-item-name">${item.nama}</div>
                     <div class="cart-item-meta">
@@ -1018,18 +1029,27 @@ function updateKeranjang() {
     container.innerHTML = html;
     
     // Hitung diskon
-    const diskon = totalHarga * (diskonPersen / 100);
+    // const diskon = totalHarga * (diskonPersen / 100);
+    const diskonManualInput = document.getElementById('diskonManualInput');
+    const diskon = parseInt(diskonManualInput.value) || 0;
+    
+    // Validasi diskon tidak boleh lebih besar dari total
+    if(diskon > totalHarga) {
+        // Swal.fire('Warning', 'Diskon tidak boleh lebih besar dari total harga', 'warning');
+        // diskon = totalHarga; // Optional: cap discount
+    }
+
     const totalBayar = totalHarga - diskon;
     
     // Update tampilan
     totalItemEl.textContent = totalItem;
     totalHargaEl.textContent = formatRupiah(totalHarga);
     diskonEl.textContent = formatRupiah(diskon);
-    totalBayarEl.textContent = formatRupiah(totalBayar);
+    totalBayarEl.textContent = formatRupiah(totalBayar < 0 ? 0 : totalBayar);
     
     // Update input hidden
     keranjangInput.value = JSON.stringify(keranjang);
-    totalHargaInput.value = totalBayar;
+    totalHargaInput.value = totalBayar < 0 ? 0 : totalBayar;
     diskonInput.value = diskon;
     
     // Update uang bayar dan kembalian
@@ -1045,6 +1065,7 @@ document.addEventListener('DOMContentLoaded', function() {
             const harga = parseInt(this.getAttribute('data-harga'));
             const stok = parseInt(this.getAttribute('data-stok'));
             const kategori = this.getAttribute('data-kategori');
+            const foto = this.getAttribute('data-foto');
             
             // Cek apakah sudah ada di keranjang
             const existingItem = keranjang.find(item => item.id === id);
@@ -1068,6 +1089,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         harga: harga,
                         stok: stok,
                         kategori: kategori,
+                        foto: foto,
                         jumlah: 1
                     });
                 } else {
@@ -1107,6 +1129,7 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Update uang bayar real-time
     document.getElementById('uangBayarInput').addEventListener('input', updatePayment);
+    document.getElementById('diskonManualInput').addEventListener('input', updateKeranjang);
     
     // Batalkan transaksi
     document.getElementById('batalTransaksi').addEventListener('click', function() {
@@ -1163,27 +1186,8 @@ function clearCart() {
     updateKeranjang();
 }
 
-// Terapkan diskon
-function applyDiscount(persen) {
-    diskonPersen = persen;
-    updateKeranjang();
-    Swal.fire({
-        icon: 'success',
-        title: 'Diskon Diterapkan',
-        text: `Diskon ${persen}% berhasil diterapkan!`
-    });
-}
-
-// Hapus diskon
-function removeDiscount() {
-    diskonPersen = 0;
-    updateKeranjang();
-    Swal.fire({
-        icon: 'info',
-        title: 'Diskon Dihapus',
-        text: 'Diskon telah dihapus dari transaksi!'
-    });
-}
+// Terapkan diskon removed
+// Hapus diskon removed
 
 // Update pembayaran
 function updatePayment() {
@@ -1207,113 +1211,11 @@ function updatePayment() {
     }
 }
 
-// Print struk
+// Print struk ke PDF
+// Print struk ke PDF (Direct Link)
 function printStruk(transaksiId) {
-    fetch(`get_struk.php?id=${transaksiId}`)
-        .then(response => response.json())
-        .then(data => {
-            if (!data.success) {
-                Swal.fire('Error', 'Gagal mengambil data struk', 'error');
-                return;
-            }
-            
-            const strukTemplate = document.getElementById('strukTemplate');
-            const struk = data.struk;
-            
-            strukTemplate.innerHTML = `
-                <style>
-                    @media print {
-                        body * {
-                            visibility: hidden;
-                        }
-                        #strukTemplate, #strukTemplate * {
-                            visibility: visible;
-                        }
-                        #strukTemplate {
-                            position: absolute;
-                            left: 0;
-                            top: 0;
-                            width: 80mm;
-                            font-family: 'Courier New', monospace;
-                            font-size: 12px;
-                            padding: 10px;
-                        }
-                        .struk-header, .struk-footer {
-                            text-align: center;
-                            margin: 5px 0;
-                        }
-                        .struk-item {
-                            display: flex;
-                            justify-content: space-between;
-                            border-bottom: 1px dashed #000;
-                            padding: 3px 0;
-                        }
-                        .struk-total {
-                            font-weight: bold;
-                            margin-top: 10px;
-                            border-top: 2px solid #000;
-                            padding-top: 5px;
-                        }
-                    }
-                </style>
-                <div class="struk">
-                    <div class="struk-header">
-                        <h4 style="margin: 0;">Kasir Computer</h4>
-                        <p style="margin: 2px 0;">Jl. Contoh No. 123</p>
-                        <p style="margin: 2px 0;">Telp: (021) 123-4567</p>
-                        <hr style="border-top: 2px solid #000; margin: 5px 0;">
-                    </div>
-                    
-                    <div class="struk-info">
-                        <p style="margin: 2px 0;">No: ${struk.kode_transaksi}</p>
-                        <p style="margin: 2px 0;">Kasir: ${struk.kasir}</p>
-                        <p style="margin: 2px 0;">Tanggal: ${struk.tanggal} ${struk.waktu}</p>
-                        <hr style="border-top: 1px dashed #000; margin: 5px 0;">
-                    </div>
-                    
-                    <div class="struk-items">
-                        ${struk.items.map(item => `
-                            <div class="struk-item">
-                                <div>${item.nama_produk}</div>
-                                <div>${item.qty} x ${formatRupiah(item.harga)}</div>
-                            </div>
-                            <div class="struk-item">
-                                <div></div>
-                                <div>${formatRupiah(item.subtotal)}</div>
-                            </div>
-                        `).join('')}
-                    </div>
-                    
-                    <div class="struk-total">
-                        <div class="struk-item">
-                            <div>Total:</div>
-                            <div>${formatRupiah(struk.total)}</div>
-                        </div>
-                        <div class="struk-item">
-                            <div>Bayar:</div>
-                            <div>${formatRupiah(struk.uang_bayar)}</div>
-                        </div>
-                        <div class="struk-item">
-                            <div>Kembali:</div>
-                            <div>${formatRupiah(struk.kembalian)}</div>
-                        </div>
-                    </div>
-                    
-                    <div class="struk-footer">
-                        <hr style="border-top: 2px solid #000; margin: 5px 0;">
-                        <p style="margin: 5px 0;">Terima kasih atas kunjungan Anda</p>
-                        <p style="margin: 2px 0; font-size: 10px;">www.kasircomputer.com</p>
-                    </div>
-                </div>
-            `;
-            
-            // Print struk
-            window.print();
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            Swal.fire('Error', 'Terjadi kesalahan saat mencetak struk', 'error');
-        });
+    // Buka page khusus cetak PDF di tab baru
+    window.open(`cetak_struk_pdf.php?id=${transaksiId}`, '_blank');
 }
 
 // Mobile sidebar toggle

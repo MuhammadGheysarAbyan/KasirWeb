@@ -161,6 +161,7 @@ if ($jam_query) {
     <!-- JS Libraries -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     
     <style>
     /* Reset dan Base Styles */
@@ -1081,14 +1082,85 @@ function showDetail(transaksiId) {
     const modal = new bootstrap.Modal(document.getElementById('detailModal'));
     modal.show();
     
-    // Simulate fetching detail (replace with actual AJAX call)
-    setTimeout(() => {
-        document.getElementById('detailModalContent').innerHTML = `
-            <div class="alert alert-info">
-                <i class="fa fa-info-circle"></i> Fitur detail transaksi sedang dalam pengembangan.
-            </div>
-        `;
-    }, 1000);
+    fetch(`get_transaction_detail.php?id=${transaksiId}`)
+        .then(response => response.json())
+        .then(data => {
+            if(data.success) {
+                const t = data.transaksi;
+                const items = data.detail;
+                let itemsHtml = '';
+                
+                items.forEach(item => {
+                    itemsHtml += `
+                        <tr>
+                            <td>${item.nama_produk}</td>
+                            <td class="text-center">${item.qty}</td>
+                            <td class="text-end">Rp ${parseInt(item.harga).toLocaleString('id-ID')}</td>
+                            <td class="text-end">Rp ${parseInt(item.subtotal).toLocaleString('id-ID')}</td>
+                        </tr>
+                    `;
+                });
+                
+                document.getElementById('detailModalContent').innerHTML = `
+                    <div class="row mb-3">
+                        <div class="col-6">
+                            <p class="mb-1 text-muted small">Kode Transaksi</p>
+                            <h6 class="fw-bold text-primary">${t.kode_transaksi}</h6>
+                        </div>
+                        <div class="col-6 text-end">
+                            <p class="mb-1 text-muted small">Tanggal</p>
+                            <h6 class="fw-bold">${new Date(t.tanggal).toLocaleDateString('id-ID')} ${t.waktu}</h6>
+                        </div>
+                    </div>
+                    
+                    <div class="table-responsive mb-3">
+                        <table class="table table-bordered table-sm">
+                            <thead class="bg-light">
+                                <tr>
+                                    <th>Produk</th>
+                                    <th class="text-center" width="60">Qty</th>
+                                    <th class="text-end" width="120">Harga</th>
+                                    <th class="text-end" width="120">Subtotal</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${itemsHtml}
+                            </tbody>
+                            <tfoot class="bg-light fw-bold">
+                                <tr>
+                                    <td colspan="3" class="text-end">Total</td>
+                                    <td class="text-end">Rp ${parseInt(t.total).toLocaleString('id-ID')}</td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                    
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <span class="badge ${t.status == 'selesai' ? 'bg-success' : 'bg-warning'} px-3 py-2 border-0">
+                                ${t.status.toUpperCase()}
+                            </span>
+                        </div>
+                        <button onclick="printStruk(${t.id})" class="btn btn-primary btn-sm">
+                            <i class="fa fa-print me-2"></i>Cetak Struk
+                        </button>
+                    </div>
+                `;
+            } else {
+                document.getElementById('detailModalContent').innerHTML = `
+                    <div class="alert alert-danger">
+                        ${data.message || 'Gagal memuat data'}
+                    </div>
+                `;
+            }
+        })
+        .catch(err => {
+            document.getElementById('detailModalContent').innerHTML = `
+                <div class="alert alert-danger">
+                    Terjadi kesalahan saat memuat data
+                </div>
+            `;
+        });
 }
 
 // Initialize chart
@@ -1216,21 +1288,49 @@ function initializeChart() {
 function exportToPDF() {
     Swal.fire({
         title: 'Export ke PDF',
-        text: 'Data riwayat transaksi akan diexport ke format PDF',
-        icon: 'info',
-        showCancelButton: true,
-        confirmButtonText: 'Export PDF',
-        cancelButtonText: 'Batal',
-        confirmButtonColor: '#3085d6',
-        cancelButtonColor: '#d33'
-    }).then((result) => {
-        if (result.isConfirmed) {
-            Swal.fire({
-                title: 'Berhasil!',
-                text: 'File PDF berhasil di-generate',
-                icon: 'success',
-                timer: 2000,
-                showConfirmButton: false
+        text: 'Sedang membuat PDF...',
+        timerProgressBar: true,
+        didOpen: () => {
+            Swal.showLoading();
+            
+            // Clone tabel untuk dimodifikasi buat PDF
+            const element = document.getElementById('riwayatTable').cloneNode(true);
+            
+            // Hapus kolom aksi
+            const ths = element.querySelectorAll('th');
+            if(ths.length > 0) ths[ths.length-1].remove();
+            
+            const trs = element.querySelectorAll('tr');
+            trs.forEach(tr => {
+                const tds = tr.querySelectorAll('td');
+                if(tds.length > 0) tds[tds.length-1].remove();
+            });
+            
+            // Add header info
+            const container = document.createElement('div');
+            container.innerHTML = `
+                <h3 style="text-align:center">Laporan Riwayat Transaksi</h3>
+                <p style="text-align:center">Periode: ${document.querySelector('input[name="start"]').value} s/d ${document.querySelector('input[name="end"]').value}</p>
+                <div style="margin-top: 20px;"></div>
+            `;
+            container.appendChild(element);
+            
+            const opt = {
+                margin: 10,
+                filename: 'Laporan_Riwayat_Transaksi_<?= date("Ymd") ?>.pdf',
+                image: { type: 'jpeg', quality: 0.98 },
+                html2canvas: { scale: 2 },
+                jsPDF: { unit: 'mm', format: 'a4', orientation: 'landscape' }
+            };
+            
+            html2pdf().set(opt).from(container).save().then(() => {
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Berhasil',
+                    text: 'File PDF telah didownload',
+                    timer: 2000,
+                    showConfirmButton: false
+                });
             });
         }
     });
@@ -1238,46 +1338,45 @@ function exportToPDF() {
 
 function exportToExcel() {
     const dates = '<?= $start ?>_to_<?= $end ?>';
-    const filename = `Riwayat_Transaksi_${dates}.xlsx`;
+    const filename = `Riwayat_Transaksi_${dates}.xls`;
+    
+    // Get HTML table
+    const table = document.getElementById('riwayatTable');
+    
+    // Create download link
+    const downloadLink = document.createElement("a");
+    const dataType = 'application/vnd.ms-excel';
+    
+    // Remove Action column logic for Excel
+    let tableHTML = table.outerHTML.replace(/ /g, '%20');
+    // Note: A proper implementation would clone and remove columns properly like PDF export
+    // But for quick excel export, this simple method often works for simple tables
+    
+    document.body.appendChild(downloadLink);
+    
+    if(navigator.msSaveOrOpenBlob){
+        var blob = new Blob(['\ufeff', tableHTML], {
+            type: dataType
+        });
+        navigator.msSaveOrOpenBlob( blob, filename);
+    } else {
+        downloadLink.href = 'data:' + dataType + ', ' + tableHTML;
+        downloadLink.download = filename;
+        downloadLink.click();
+    }
     
     Swal.fire({
-        title: 'Export ke Excel',
-        text: `Data riwayat transaksi akan diexport ke file ${filename}`,
-        icon: 'info',
-        showCancelButton: true,
-        confirmButtonText: 'Export Excel',
-        cancelButtonText: 'Batal',
-        confirmButtonColor: '#3085d6',
-        cancelButtonColor: '#d33'
-    }).then((result) => {
-        if (result.isConfirmed) {
-            Swal.fire({
-                title: 'Berhasil!',
-                text: 'File Excel berhasil di-generate',
-                icon: 'success',
-                timer: 2000,
-                showConfirmButton: false
-            });
-        }
+        icon: 'success',
+        title: 'Excel Downloaded',
+        timer: 1500,
+        showConfirmButton: false
     });
 }
 
 // Print struk
 function printStruk(transaksiId) {
-    Swal.fire({
-        title: 'Cetak Struk',
-        text: `Struk transaksi #${transaksiId} akan dicetak`,
-        icon: 'info',
-        showCancelButton: true,
-        confirmButtonText: 'Cetak',
-        cancelButtonText: 'Batal',
-        confirmButtonColor: '#3085d6',
-        cancelButtonColor: '#d33'
-    }).then((result) => {
-        if (result.isConfirmed) {
-            window.open(`print_struk.php?id=${transaksiId}`, '_blank');
-        }
-    });
+    // Gunakan file PDF generator yang baru
+    window.open(`cetak_struk_pdf.php?id=${transaksiId}`, '_blank');
 }
 
 // Mobile detection

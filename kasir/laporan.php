@@ -720,11 +720,11 @@ footer {
 
     <!-- Export Button -->
     <div class="text-center mb-4">
-        <button class="btn btn-success btn-lg" onclick="exportLaporan()">
+        <button class="btn btn-success btn-lg" onclick="exportExcel()">
             <i class="fa fa-file-excel me-2"></i>Export Laporan Excel
         </button>
         <button class="btn btn-danger btn-lg ms-2" onclick="printLaporan()">
-            <i class="fa fa-file-pdf me-2"></i>Print Laporan PDF
+            <i class="fa fa-file-pdf me-2"></i>Export Laporan PDF
         </button>
     </div>
 </div>
@@ -733,6 +733,7 @@ footer {
     &copy; <?= date('Y'); ?> Kasir Computer — Developed by Abyan
 </footer>
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 <script>
 // Chart.js Configuration
@@ -844,43 +845,83 @@ function toggleMobileSidebar() {
 
 // Print struk
 function printStruk(transaksiId) {
-    window.open(`print_struk.php?id=${transaksiId}`, '_blank', 'width=400,height=600');
+    window.open(`cetak_struk_pdf.php?id=${transaksiId}`, '_blank');
 }
 
-// Export laporan
-function exportLaporan() {
-    const tanggal = '<?= $filter_tanggal ?>' || '<?= date('Y-m-d') ?>';
-    const bulan = '<?= $filter_bulan ?>';
+// Export Excel
+function exportExcel() {
+    const tanggal = '<?= $filter_tanggal ?>' || 'Semua';
+    const filename = `Laporan_Penjualan_${tanggal}.xls`;
+    
+    // Select tables to export (Daily Transactions + Monthly Stats if needed)
+    // For simplicity, let's export the transaction table which is most important
+    const table = document.querySelector('.table');
+    
+    if(!table) {
+        Swal.fire('Info', 'Tidak ada data transaksi untuk diexport', 'info');
+        return;
+    }
+
+    const downloadLink = document.createElement("a");
+    const dataType = 'application/vnd.ms-excel';
+    
+    // Clean up HTML for Excel (replace spaces with %20 not needed for data uri usually, but good practice)
+    // We clone to not affect display
+    const clone = table.cloneNode(true);
+    
+    // Remove "Aksi" column
+    const ths = clone.querySelectorAll('th');
+    if(ths.length > 0) ths[ths.length-1].remove();
+    
+    const trs = clone.querySelectorAll('tr');
+    trs.forEach(tr => {
+        const tds = tr.querySelectorAll('td');
+        if(tds.length > 0) tds[tds.length-1].remove();
+    });
+
+    const tableHTML = clone.outerHTML.replace(/ /g, '%20');
+    
+    document.body.appendChild(downloadLink);
+    
+    if(navigator.msSaveOrOpenBlob){
+        var blob = new Blob(['\ufeff', tableHTML], {
+            type: dataType
+        });
+        navigator.msSaveOrOpenBlob( blob, filename);
+    } else {
+        downloadLink.href = 'data:' + dataType + ', ' + tableHTML;
+        downloadLink.download = filename;
+        downloadLink.click();
+    }
     
     Swal.fire({
-        title: 'Export Laporan',
-        text: 'Pilih format export:',
-        icon: 'question',
-        showCancelButton: true,
-        confirmButtonColor: '#10b981',
-        cancelButtonColor: '#6c757d',
-        confirmButtonText: 'Excel',
-        cancelButtonText: 'PDF',
-        showDenyButton: true,
-        denyButtonText: 'Print',
-        denyButtonColor: '#3b82f6'
-    }).then((result) => {
-        if (result.isConfirmed) {
-            // Export Excel
-            window.open(`export_laporan.php?format=excel&tanggal=${tanggal}&bulan=${bulan}`, '_blank');
-        } else if (result.isDenied) {
-            // Print
-            window.open(`export_laporan.php?format=print&tanggal=${tanggal}&bulan=${bulan}`, '_blank');
-        } else if (result.dismiss === Swal.DismissReason.cancel) {
-            // Export PDF
-            window.open(`export_laporan.php?format=pdf&tanggal=${tanggal}&bulan=${bulan}`, '_blank');
-        }
+        icon: 'success',
+        title: 'Excel Downloaded',
+        timer: 1500,
+        showConfirmButton: false
     });
 }
 
-// Print laporan
+// Print laporan ke PDF
 function printLaporan() {
-    window.print();
+    const content = document.getElementById('content');
+    const opt = {
+        margin: 10,
+        filename: 'laporan_penjualan_<?= date('Y-m-d') ?>.pdf',
+        image: { type: 'jpeg', quality: 0.98 },
+        html2canvas: { scale: 2 },
+        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+    };
+    
+    html2pdf().set(opt).from(content).save();
+    
+    Swal.fire({
+        icon: 'success',
+        title: 'PDF Dibuat!',
+        text: 'Laporan sedang didownload...',
+        timer: 2000,
+        showConfirmButton: false
+    });
 }
 
 // Mobile detection

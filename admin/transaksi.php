@@ -649,7 +649,9 @@ function showDetail(transaksiId) {
         </div>
     `;
     
-    const modal = new bootstrap.Modal(document.getElementById('detailModal'));
+    // Use getOrCreateInstance to avoid creating duplicate modals
+    const modalElement = document.getElementById('detailModal');
+    const modal = bootstrap.Modal.getOrCreateInstance(modalElement);
     modal.show();
     
     // Load detail via fetch
@@ -672,8 +674,9 @@ function showDetail(transaksiId) {
 }
 
 // Print struk
+// Print struk
 function printStruk(transaksiId) {
-    window.open(`print_struk.php?id=${transaksiId}`, '_blank', 'width=400,height=600');
+    window.open(`cetak_struk_pdf.php?id=${transaksiId}`, '_blank');
 }
 
 // Update transaction status
